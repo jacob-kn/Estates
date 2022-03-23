@@ -11,7 +11,7 @@ const Seller = require('../models/sellerModel') // import seller model
  * @access public
  */
 const registerSeller = asyncHandler(async (req, res) => {
-  const { email, password, realtor } = req.body // destruct data
+  const { email, password, isRealtor, company } = req.body // destruct data
 
   //only need to username and password to sign in
   if (!username || !password) {
@@ -31,12 +31,23 @@ const registerSeller = asyncHandler(async (req, res) => {
   const salt = await bcrypt.genSalt(10)
   const hashedPassword = await bcrypt.hash(password, salt)
 
-  //create users = await
-  const user = await Seller.create({
-    email,
-    password: hashedPassword,
-    realtor: realtor
-  })
+  let user
+
+  if (company) {
+    user = await Seller.create({
+      email,
+      password: hashedPassword,
+      isRealtor,
+      company
+    })
+  } else {
+    user = await Seller.create({
+      email,
+      password: hashedPassword,
+      isRealtor,
+      company: 'None'
+    })
+  }
 
   if (user) {
     // if user created

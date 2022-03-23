@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
 import { FaSignInAlt } from 'react-icons/fa'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { login, reset } from '../features/auth/authSlice'
+import { loginBuyer, loginSeller, reset } from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
 
 function Login () {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   })
 
-  const { username, password } = formData
+  const { email, password } = formData
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -40,24 +40,26 @@ function Login () {
     }))
   }
 
-  const onSubmit = e => {
+  const onBuyerLogin = e => {
     e.preventDefault()
 
     const userData = {
-      username,
+      email,
       password
     }
 
-    dispatch(login(userData))
+    dispatch(loginBuyer(userData))
   }
 
-  const sellerLogin = e => {
+  const onSellerLogin = e => {
     e.preventDefault()
 
     const userData = {
-      username,
+      email,
       password
     }
+
+    dispatch(loginSeller(userData))
   }
 
   if (isLoading) {
@@ -74,15 +76,15 @@ function Login () {
       </section>
 
       <section className='form'>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onBuyerLogin}>
           <div className='form-group'>
             <input
-              type='username'
+              type='email'
               className='form-control'
-              id='username'
-              name='username'
-              value={username}
-              placeholder='Enter your username'
+              id='email'
+              name='email'
+              value={email}
+              placeholder='Enter your email'
               onChange={onChange}
             />
           </div>
@@ -107,7 +109,7 @@ function Login () {
               </button>
             </div>
             <div className='form-group'>
-              <button onClick={sellerLogin} className='btn'>
+              <button onClick={onSellerLogin} className='btn'>
                 Seller
               </button>
             </div>

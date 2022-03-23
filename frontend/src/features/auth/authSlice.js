@@ -12,12 +12,12 @@ const initialState = {
   message: ''
 }
 
-// Register user
-export const register = createAsyncThunk(
-  'auth/register',
+// Register buyer
+export const registerBuyer = createAsyncThunk(
+  'auth/register-buyer',
   async (user, thunkAPI) => {
     try {
-      return await authService.register(user)
+      return await authService.registerBuyer(user)
     } catch (error) {
       const message =
         (error.response &&
@@ -30,18 +30,59 @@ export const register = createAsyncThunk(
   }
 )
 
-// Login user
-export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
-  try {
-    return await authService.login(user)
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString()
-    return thunkAPI.rejectWithValue(message)
+// Register seller
+export const registerSeller = createAsyncThunk(
+  'auth/register-seller',
+  async (user, thunkAPI) => {
+    try {
+      return await authService.registerSeller(user)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
   }
-})
+)
+
+// Login as buyer
+export const loginBuyer = createAsyncThunk(
+  'auth/login-buyer',
+  async (user, thunkAPI) => {
+    try {
+      return await authService.loginBuyer(user)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+// Login as seller
+export const loginSeller = createAsyncThunk(
+  'auth/login-seller',
+  async (user, thunkAPI) => {
+    try {
+      return await authService.loginSeller(user)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
 
 export const logout = createAsyncThunk('auth/logout', async () => {
   await authService.logout()
@@ -60,29 +101,57 @@ export const authSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(register.pending, state => {
+      .addCase(registerBuyer.pending, state => {
         state.isLoading = true
       })
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(registerBuyer.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
         state.user = action.payload
       })
-      .addCase(register.rejected, (state, action) => {
+      .addCase(registerBuyer.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
         state.user = null
       })
-      .addCase(login.pending, state => {
+      .addCase(registerSeller.pending, state => {
         state.isLoading = true
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(registerSeller.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
         state.user = action.payload
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(registerSeller.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+        state.user = null
+      })
+      .addCase(loginBuyer.pending, state => {
+        state.isLoading = true
+      })
+      .addCase(loginBuyer.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.user = action.payload
+      })
+      .addCase(loginBuyer.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+        state.user = null
+      })
+      .addCase(loginSeller.pending, state => {
+        state.isLoading = true
+      })
+      .addCase(loginSeller.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.user = action.payload
+      })
+      .addCase(loginSeller.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

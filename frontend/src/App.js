@@ -12,7 +12,8 @@ import Header from './components/Header'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import MyAccount from './pages/MyAccount'
-import Register from './pages/Register'
+import RegisterBuyer from './pages/RegisterBuyer'
+import RegisterSeller from './pages/RegisterSeller'
 import SavedProperties from './pages/SavedProperties'
 import UploadPost from './pages/UploadPost'
 
@@ -26,7 +27,8 @@ function App () {
             <Route path='/' element={<Dashboard />} />
             <Route path='/login' element={<Login />} />
             <Route path='/my-account' element={<MyAccount />} />
-            <Route path='/register/buyer' element={<Register />} />
+            <Route path='/register/buyer' element={<RegisterBuyer />} />
+            <Route path='/register/seller' element={<RegisterSeller />} />
             <Route path='/saved-properties' element={<SavedProperties />} />
             <Route path='/uploadPost' element={<UploadPost />} />
           </Routes>

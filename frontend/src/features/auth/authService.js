@@ -2,9 +2,9 @@ import axios from 'axios'
 
 const API_URL = '/api/users/'
 
-// Register user
-const register = async userData => {
-  const response = await axios.post(API_URL, userData)
+// Register buyer
+const registerBuyer = async userData => {
+  const response = await axios.post(API_URL + 'buyer', userData)
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data))
@@ -13,9 +13,31 @@ const register = async userData => {
   return response.data
 }
 
-// Login user
-const login = async userData => {
-  const response = await axios.post(API_URL + 'login', userData)
+// Register seller
+const registerSeller = async userData => {
+  const response = await axios.post(API_URL + 'seller', userData)
+
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data))
+  }
+
+  return response.data
+}
+
+// Login as buyer
+const loginBuyer = async userData => {
+  const response = await axios.post(API_URL + 'buyer/login', userData)
+
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data))
+  }
+
+  return response.data
+}
+
+// Login as seller
+const loginSeller = async userData => {
+  const response = await axios.post(API_URL + 'seller/login', userData)
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data))
@@ -30,9 +52,11 @@ const logout = () => {
 }
 
 const authService = {
-  register,
-  logout,
-  login
+  registerBuyer,
+  registerSeller,
+  loginBuyer,
+  loginSeller,
+  logout
 }
 
 export default authService

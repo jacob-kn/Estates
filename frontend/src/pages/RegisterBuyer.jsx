@@ -3,17 +3,17 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { FaUser } from 'react-icons/fa'
-import { register, reset } from '../features/auth/authSlice'
+import { registerBuyer, reset } from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
 
-function Register () {
+function RegisterBuyer () {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
     password2: ''
   })
 
-  const { username, password, password2 } = formData
+  const { email, password, password2 } = formData
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -48,11 +48,11 @@ function Register () {
       toast.error('Passwords do not match')
     } else {
       const userData = {
-        username,
+        email,
         password
       }
 
-      dispatch(register(userData))
+      dispatch(registerBuyer(userData))
     }
   }
 
@@ -66,18 +66,18 @@ function Register () {
         <h1>
           <FaUser /> Register
         </h1>
-        <p>Create an account</p>
+        <p>Create a buyer account</p>
       </section>
 
       <section className='form'>
         <form onSubmit={onSubmit}>
           <div className='form-group'>
             <input
-              type='username'
+              type='email'
               className='form-control'
-              id='username'
-              name='username'
-              value={username}
+              id='email'
+              name='email'
+              value={email}
               placeholder='Enter your email'
               onChange={onChange}
             />
@@ -121,4 +121,4 @@ function Register () {
   )
 }
 
-export default Register
+export default RegisterBuyer

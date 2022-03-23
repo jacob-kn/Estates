@@ -11,13 +11,9 @@ const sellerSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add a password']
     },
-    realtor: {
+    isRealtor: {
       type: Boolean,
       required: true
-    },
-    homeowner: {
-      type: String,
-      required: false
     },
     company: {
       type: String,
