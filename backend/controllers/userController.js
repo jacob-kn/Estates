@@ -14,7 +14,7 @@ const registerSeller = asyncHandler(async (req, res) => {
   const { email, password, isRealtor, company } = req.body // destruct data
 
   //only need to username and password to sign in
-  if (!username || !password) {
+  if (!email || !password) {
     // these aren't included
     res.status(400) //400 Bad Request
     throw new Error('Please Add All Fields')
@@ -54,6 +54,8 @@ const registerSeller = asyncHandler(async (req, res) => {
     res.status(200).json({
       _id: user.id, // the created id
       email: user.email,
+      type: 'seller',
+      isRealtor: user.isRealtor,
       token: generateToken(user._id) //also send token to user
     })
   } else {
@@ -99,6 +101,7 @@ const registerBuyer = asyncHandler(async (req, res) => {
     res.status(200).json({
       _id: user.id, // the created id
       email: user.email,
+      type: 'buyer',
       token: generateToken(user._id) //also send token to user
     })
   } else {
@@ -123,6 +126,7 @@ const loginBuyer = asyncHandler(async (req, res) => {
       // return current withthe jwt
       _id: user.id, // the created id
       email: user.email,
+      type: 'buyer',
       token: generateToken(user._id) //also send token to user
     })
   } else {
@@ -147,6 +151,8 @@ const loginSeller = asyncHandler(async (req, res) => {
       // return current withthe jwt
       _id: user.id, // the created id
       email: user.email,
+      type: 'seller',
+      isRealtor: user.isRealtor,
       token: generateToken(user._id) //also send token to user
     })
   } else {
