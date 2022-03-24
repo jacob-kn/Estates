@@ -15,6 +15,7 @@ import MyAccount from './pages/MyAccount'
 import RegisterBuyer from './pages/RegisterBuyer'
 import RegisterSeller from './pages/RegisterSeller'
 import SavedProperties from './pages/SavedProperties'
+import ListedProperties from './pages/ListedProperties'
 import UploadPost from './pages/UploadPost'
 
 function App () {
@@ -30,6 +31,7 @@ function App () {
             <Route path='/register/buyer' element={<RegisterBuyer />} />
             <Route path='/register/seller' element={<RegisterSeller />} />
             <Route path='/saved-properties' element={<SavedProperties />} />
+            <Route path='/listed-properties' element={<ListedProperties />} />
             <Route path='/uploadPost' element={<UploadPost />} />
           </Routes>
         </div>
