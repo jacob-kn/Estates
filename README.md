@@ -74,7 +74,7 @@ Room for improvement:
 ## Acknowledgements
 Give credit here.
 - This project was based on [this tutorial](https://www.youtube.com/playlist?list=PLx5VofXGboI3keWyKVqmEDXT4Fk-utH2P).
-- Many thanks to Tim Reiner for the help with diagrams and advice for teh project
+- Many thanks to Tim Reimer for the help with diagrams and advice for the project
 
 
 
