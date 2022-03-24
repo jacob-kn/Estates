@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
 
 //page imports
-import Dashboard from './pages/Dashboard'
+import Main from './pages/Main'
 import Login from './pages/Login'
 import MyAccount from './pages/MyAccount'
 import RegisterBuyer from './pages/RegisterBuyer'
@@ -25,7 +25,7 @@ function App () {
         <div className='container'>
           <Header />
           <Routes>
-            <Route path='/' element={<Dashboard />} />
+            <Route path='/' element={<Main />} />
             <Route path='/login' element={<Login />} />
             <Route path='/my-account' element={<MyAccount />} />
             <Route path='/register/buyer' element={<RegisterBuyer />} />
