@@ -90,9 +90,13 @@ h3 {
   color: #828282;
 }
 
-.form,
-.content {
+.form {
   width: 70%;
+  margin: 0 auto;
+}
+
+.content {
+  width: 90%;
   margin: 0 auto;
 }
 
@@ -234,6 +238,19 @@ h3 {
   margin: 0px 30px;
 }
 
+.properties {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
+  gap: 20px;
+}
+
+.largeLine {
+  line-height: 2.5;
+  font-size: 1.2rem;
+  margin-bottom: 0px
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -243,7 +260,16 @@ h3 {
   }
 }
 
-@media (max-width: 600px) {
+@media screen and (max-width: 900px) {
+  .properties {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    gap: 20px;
+  }
+}
+
+@media screen and (max-width: 600px) {
   .form {
     width: 90%;
   }
@@ -254,5 +280,12 @@ h3 {
 
   .heading p {
     font-size: 1.5rem;
+  }
+
+  .properties {
+    display: grid;
+    grid-template-columns: auto;
+    justify-content: center;
+    gap: 20px;
   }
 }

@@ -24,7 +24,7 @@ const criteriaSchema = mongoose.Schema(
       required: false
     },
     price: {
-      type: String,
+      type: Number,
       required: false
     }
   },
