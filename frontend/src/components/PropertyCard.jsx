@@ -17,6 +17,8 @@ import { Link } from 'react-router-dom'
 
 import { Currency } from 'react-intl-number-format'
 
+import { useSelector } from 'react-redux'
+
 function PropertyCard (props) {
   const { property, browse } = props
 
@@ -31,6 +33,9 @@ function PropertyCard (props) {
   const randomAvColour =
     avatarColours[Math.floor(Math.random() * avatarColours.length)]
 
+  const auth = useSelector(state => state.auth)
+  const user = auth.user
+
   return (
     <Card sx={{ maxWidth: 300 }}>
       <CardHeader
@@ -38,13 +43,16 @@ function PropertyCard (props) {
           <Avatar
             sx={{ bgcolor: randomAvColour, '&:hover': { opacity: 0.7 } }}
             component={Link}
-            to={'/' + property.seller.email}
+            to={'/user/' + property.seller.email}
           >
             {property.seller.email.charAt(0)}
           </Avatar>
         }
         title={
-          <Link to={'/' + property.seller.email} className='greyHover'>
+          <Link to={'/user/' + property.seller.email} className='greyHover'>
+            {property.seller.isRealtor ? (
+              <span style={{ fontWeight: 'bolder' }}>Realtor: </span>
+            ) : null}
             {property.seller.email}
           </Link>
         }
@@ -73,13 +81,13 @@ function PropertyCard (props) {
             <FaCouch /> {property.criteria.furnished ? 'Yes' : 'No'}
           </div>
         </Box>
-        <CardContent sx={{ padding: 0 }}>
+        <CardContent sx={{ padding: '0 0 10px 0' }}>
           <Typography variant='body2' color='text.secondary'>
             {addrStr} <br /> {property.zipCode}
           </Typography>
         </CardContent>
       </CardActionArea>
-      {browse ? (
+      {browse && user && user.type === 'buyer' ? (
         <>
           <CardActions disableSpacing>
             <IconButton aria-label='add to saved properties'>
