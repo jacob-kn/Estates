@@ -16,9 +16,9 @@ import RegisterBuyer from './pages/RegisterBuyer'
 import RegisterSeller from './pages/RegisterSeller'
 import SavedProperties from './pages/SavedProperties'
 import ListedProperties from './pages/ListedProperties'
-import UploadPost from './pages/UploadPost'
 import Property from './pages/Property'
 import User from './pages/User'
+import AddProperty from './pages/AddProperty'
 
 function App () {
   return (
@@ -34,7 +34,7 @@ function App () {
             <Route path='/register/seller' element={<RegisterSeller />} />
             <Route path='/saved-properties' element={<SavedProperties />} />
             <Route path='/listed-properties' element={<ListedProperties />} />
-            <Route path='/uploadPost' element={<UploadPost />} />
+            <Route path='/add-property' element={<AddProperty />} />
             <Route path='/property/:id' element={<Property />} />
             <Route path='/user/:email' element={<User />} />
           </Routes>

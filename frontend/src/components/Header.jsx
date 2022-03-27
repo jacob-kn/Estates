@@ -3,6 +3,7 @@ import React from 'react' // don't need this done automatically
 
 import { FaSignInAlt, FaSignOutAlt, FaUser, FaHouseUser } from 'react-icons/fa' // icons
 import { BsPersonPlusFill, BsCardList } from 'react-icons/bs' // icons
+import { GrAdd } from 'react-icons/gr' // icons
 
 import { useSelector, useDispatch } from 'react-redux' // for logout
 import { logout, reset } from '../features/auth/authSlice'
@@ -42,6 +43,11 @@ function Header () {
 
         {user && user.type === 'seller' ? (
           <>
+            <li>
+            <Link to='/add-property'>
+                 <GrAdd /> Add Property
+               </Link>
+            </li>
             <li>
               <Link to='/listed-properties'>
                 <FaHouseUser /> Listed properties
