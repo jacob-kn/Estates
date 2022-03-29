@@ -1,11 +1,11 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useSelector, useDispatch} from 'react-redux'
+import Filter from '../components/Filter'
 
-function Main() {
-
+function Main() { 
   return (
-    <div>Main</div>
+    <div>
+      <Filter />
+    </div>
   )
 }
 
