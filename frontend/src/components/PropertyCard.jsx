@@ -355,6 +355,15 @@ function PropertyCard (props) {
                         Submit
                       </button>
                     </div>
+
+                    <div className='form-group'>
+                      <button
+                        className='btn btn-block'
+                        style={{ backgroundColor: '#E23636', border: '0px' }}
+                      >
+                        Remove property
+                      </button>
+                    </div>
                   </form>
                 </DialogContent>
                 <DialogActions>
