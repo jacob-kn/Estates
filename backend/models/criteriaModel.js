@@ -29,7 +29,7 @@ const criteriaSchema = mongoose.Schema(
     }
   },
   {
-    timestamps: true // automatically creates time stamps for updated and created
+    collection: 'criteria' // force collection to be named criteria instead of pluralizing
   }
 ) //end buyerSchema
 

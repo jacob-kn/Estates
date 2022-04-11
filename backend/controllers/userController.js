@@ -13,7 +13,7 @@ const Seller = require('../models/sellerModel') // import seller model
 const registerSeller = asyncHandler(async (req, res) => {
   const { email, password, isRealtor, company } = req.body // destruct data
 
-  //only need to username and password to sign in
+  //only need to email and password to sign in
   if (!email || !password) {
     // these aren't included
     res.status(400) //400 Bad Request
@@ -56,6 +56,7 @@ const registerSeller = asyncHandler(async (req, res) => {
       email: user.email,
       type: 'seller',
       isRealtor: user.isRealtor,
+      company: user.company,
       token: generateToken(user._id) //also send token to user
     })
   } else {
@@ -72,7 +73,7 @@ const registerSeller = asyncHandler(async (req, res) => {
 const registerBuyer = asyncHandler(async (req, res) => {
   const { email, password } = req.body // destruct data
 
-  //only need to username and password to sign in
+  //only need to email and password to sign in
   if (!email || !password) {
     // these aren't included
     res.status(400) //400 Bad Request
@@ -148,11 +149,12 @@ const loginSeller = asyncHandler(async (req, res) => {
   //password is hashed need to bcyrpt method called compare
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
-      // return current withthe jwt
+      // return current with the jwt
       _id: user.id, // the created id
       email: user.email,
       type: 'seller',
       isRealtor: user.isRealtor,
+      company: user.company,
       token: generateToken(user._id) //also send token to user
     })
   } else {
@@ -170,103 +172,160 @@ const loginSeller = asyncHandler(async (req, res) => {
  * @access private
  */
 const getMe = asyncHandler(async (req, res) => {
-  const { _id, email } = await User.findById(req.user.id)
-
-  res.status(200).json({
-    // return user
-    _id: _id,
-    email
-  })
+  let user = await Buyer.findById(req.user.id)
+  if (!user) {
+    user = await Seller.findById(req.user.id)
+    res.status(200).json({
+      // return current withthe jwt
+      _id: user.id, // the created id
+      email: user.email,
+      type: 'seller',
+      isRealtor: user.isRealtor,
+      company: user.company,
+      token: generateToken(user._id) //also send token to user
+    })
+  } else {
+    res.status(200).json({
+      _id: user.id, // the created id
+      email: user.email,
+      type: 'buyer',
+      token: generateToken(user._id) //also send token to user
+    })
+  }
 }) //end getMe
 
-// /**
-//  * @desc DELETE a user
-//  * @route DELETE /api/users/id
-//  * //need token to access
-//  * for when a user is already loged in
-//  * need jwt in the authorization to access
-//  *
-//  * error check taken care of by authMiddleware.js
-//  *
-//  * @access private
-//  */
-// const deleteMe  = asyncHandler( async (req, res) => {
+/**
+ * @desc DELETE a user
+ * @route DELETE /api/users
+ * //need token to access
+ * for when a user is already loged in
+ * need jwt in the authorization to access
+ *
+ * error check taken care of by authMiddleware.js
+ *
+ * @access private
+ */
+const deleteMe = asyncHandler(async (req, res) => {
+  let user = await Buyer.findOneAndDelete({ _id: req.user.id })
+  if (!user) {
+    user = await Seller.findOneAndDelete({ _id: req.user.id })
+  }
 
-//     const deletedUser = await User.findOneAndDelete({ _id: req.user.id }) // delete one user and return info
+  res.status(200).json({
+    // return information
+    message: 'User Deleted'
+  })
+}) //end deleteMe
 
-//     res.status(200).json({ // return information
-//         message:'User Deleted',
-//         deletedUser
-//     });
+/**
+ * @desc update email
+ * @route PUT /api/users/email
+ * //need token to access
+ * for when a user is already loged in
+ * need jwt in the authorization to access
+ *
+ * error check taken care of by authMiddleware.js
+ *
+ * @access private
+ */
+const updateEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body
+  if (!email) {
+    res.status(400)
+    throw new Error('Please Add New Email')
+  }
 
-// }) //end deleteMe
+  //set up fields to update
+  const filter = { _id: req.user.id }
+  const update = { email }
 
-// /**
-//  * @desc update username
-//  * @route PUT /api/users/username
-//  * //need token to access
-//  * for when a user is already loged in
-//  * need jwt in the authorization to access
-//  *
-//  * error check taken care of by authMiddleware.js
-//  *
-//  * @access private
-//  */
-// const updateUsername  = asyncHandler( async (req, res) => {
+  let user = await Buyer.findByIdAndUpdate(filter, update, {
+    new: true
+  }) // update the user
+  if (!user) {
+    user = await Seller.findByIdAndUpdate(filter, update, {
+      new: true
+    }) // update the user
+  }
 
-//     const {username} = req.body;
-//     if(!username){
-//         res.status(400);
-//         throw new Error("Please Add New Username");
-//     }
+  res.status(200).json({
+    email: user.email // updated email
+  })
+}) //end updateUsername
 
-//     //set up fields to update
-//     const filter = { _id: req.user.id };
-//     const update = { username: username };
+/**
+ * @desc update password
+ * @route PUT /api/users/password
+ * //need token to access
+ * for when a user is already loged in
+ * need jwt in the authorization to access
+ *
+ * @access private
+ */
+const updatePassword = asyncHandler(async (req, res) => {
+  const { password } = req.body
+  if (!password) {
+    res.status(400)
+    throw new Error('Please Add New Password')
+  }
 
-//     const updatedUser = await User.findByIdAndUpdate(filter, update, {new: true} ); // updatew trhe user
+  //hash password using bcyrptjs
+  const salt = await bcrypt.genSalt(10)
+  const hashedPassword = await bcrypt.hash(password, salt)
 
-//     res.status(200).json({ //retrun object
-//         message:'Updated Username',
-//         updatedUser
+  //set up fields to update
+  const filter = { _id: req.user.id }
+  const update = { password: hashedPassword }
 
-//     });
+  let user = await Buyer.findByIdAndUpdate(filter, update, {
+    new: true
+  }) // update the user
+  if (!user) {
+    user = await Seller.findByIdAndUpdate(filter, update, {
+      new: true
+    }) // update the user
+  }
 
-// }) //end updateUsername
+  res.status(200).json({
+    message: 'Password updated'
+  })
+}) //end updateUsername
 
-// /**
-//  * @desc update password
-//  * @route PUT /api/users/password
-//  * //need token to access
-//  * for when a user is already loged in
-//  * need jwt in the authorization to access
-//  *
-//  * @access private
-//  */
-// const updatePassword  = asyncHandler( async (req, res) => {
+/**
+ * @desc update company
+ * @route PUT /api/users/realtor/company
+ * //need token to access
+ * for when a user is already loged in
+ * need jwt in the authorization to access
+ *
+ * error check taken care of by authMiddleware.js
+ *
+ * @access private
+ */
+const updateCompany = asyncHandler(async (req, res) => {
+  if (!req.user.isRealtor) {
+    res.status(400) // 400 Bad Request
+    throw new Error('Current user is not a realtor')
+  }
 
-//     const {password} = req.body;
-//     if(!password){
-//         res.status(400);
-//         throw new Error("Please Add New Password");
-//     }
+  const { company } = req.body
+  if (!company) {
+    res.status(400)
+    throw new Error('Please Add New Company')
+  }
 
-//     //hash password using bcyrptjs
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(password, salt);
+  //set up fields to update
+  const filter = { _id: req.user.id }
+  const update = { company }
 
-//     //set up fields to update
-//     const filter = { _id: req.user.id };
-//     const update = { password: hashedPassword };
+  let user = await Seller.findByIdAndUpdate(filter, update, {
+    new: true
+  }) // update the user
 
-//     const updatedUser = await User.findByIdAndUpdate(filter, update, {new: true} ); //update the users password
-
-//     res.status(200).json({ //retrun object
-//         message:'Updated Username',
-//         updatedUser
-//     });
-
-// }) //end updateUsername
+  res.status(200).json({
+    company: user.company // updated company
+  })
+}) //end updateCompany
 
 //Generate JWT Function
 const generateToken = id => {
@@ -282,8 +341,9 @@ module.exports = {
   registerSeller,
   loginBuyer,
   loginSeller,
-  getMe
-  // deleteMe,
-  // updateUsername,
-  // updatePassword
+  getMe,
+  deleteMe,
+  updateEmail,
+  updatePassword,
+  updateCompany
 }

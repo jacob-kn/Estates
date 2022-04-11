@@ -6,8 +6,21 @@ const {
   registerBuyer,
   loginSeller,
   loginBuyer,
-  getMe
+  getMe,
+  deleteMe,
+  updateEmail,
+  updatePassword,
+  updateCompany
 } = require('../controllers/userController')
+const {
+  getSavedProperties,
+  addToSavedProperties,
+  removeFromSavedProperties,
+  getListings,
+  removeFromListings,
+  updateListing,
+  tmpAdd
+} = require('../controllers/userPropertiesController')
 
 const { protect } = require('../middleware/authMiddleware') // to make routes private (need JWT)
 //registering a user
@@ -19,10 +32,27 @@ router.post('/buyer/login', loginBuyer) //should be public
 //get current user information
 router.get('/me', protect, getMe) // private/protected
 //delete current user
-// router.delete('/id', protect, deleteMe) // private/protected
-// //update current username
-// router.put('/username', protect, updateUsername) // private/protected
-// //update current username
-// router.put('/password', protect, updatePassword) // private/protected
+router.delete('/', protect, deleteMe) // private/protected
+//update current email
+router.put('/email', protect, updateEmail) // private/protected
+//update current password
+router.put('/password', protect, updatePassword) // private/protected
+//update company name
+router.put('/realtor/company', protect, updateCompany) // private/protected
+
+// get saved properties
+router.get('/buyer/saved-properties', protect, getSavedProperties) // private/protected
+// add to saved properties
+router.post('/buyer/saved-properties/:id', protect, addToSavedProperties) // private/protected
+// remove from saved properties
+router.delete('/buyer/saved-properties/:id', protect, removeFromSavedProperties) // private/protected
+// get listed properties
+router.get('/seller/listings', protect, getListings) // private/protected
+// get listed properties
+router.delete('/seller/listings/:id', protect, removeFromListings) // private/protected
+// get listed properties
+router.put('/seller/listings/:id', protect, updateListing) // private/protected
+
+router.post('/seller/add', protect, tmpAdd)
 
 module.exports = router // export the router
