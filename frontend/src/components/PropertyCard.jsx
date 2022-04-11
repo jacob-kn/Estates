@@ -98,7 +98,6 @@ function PropertyCard (props) {
     type,
     furnished,
     price,
-    imgPath
   } = formData
 
   const quadOpts = [
@@ -146,9 +145,7 @@ function PropertyCard (props) {
       type,
       furnished,
       price,
-      imgPath
     }
-    console.log(postData)
   }
 
   return (
@@ -335,17 +332,6 @@ function PropertyCard (props) {
                         name='price'
                         value={price}
                         placeholder={property.criteria.price}
-                        onChange={onChange}
-                      />
-                    </div>
-                    <div className='form-group'>
-                      <input
-                        type='File'
-                        className='form-control'
-                        id='imgPath'
-                        name='imgPath'
-                        value={imgPath}
-                        placeholder='Enter your imgPath'
                         onChange={onChange}
                       />
                     </div>
