@@ -3,6 +3,89 @@ const Property = require('../models/propertyModel')
 const Seller = require('../models/sellerModel')
 const Criteria = require('../models/criteriaModel')
 const valid = require('../middleware/validateID')
+const util = require('util')
+
+/**
+ * @desc create a new property and criteria
+ * @route GET /api/properties/
+ * @access private
+ */
+const createProperty = asyncHandler(async (req, res) => {
+
+  console.log("req: "+util.inspect(req, {showHidden: false, depth: null, colors: true}))
+    if (!req.user.id) {
+      res.status(400)
+      throw new Error('Please add Post Information')
+    }
+
+    if (req.files === null) { // check that there is a file attached
+        res.status(400)
+        throw new Error('No File Selected') // this doens't work but i can't see a reason my notnpm
+    }
+
+    const file = req.files.file;
+    const newFileNameSpaces = Date.now() + file.name // new unique name
+
+    const newFileName = newFileNameSpaces.replace(/\s/g, '_')
+
+    const acceptedImageTypes = ['image/gif', 'image/jpeg', 
+  'image/png', 'image/jpg','image/x-icon'];
+
+  if(!acceptedImageTypes.includes(file.mimetype)){ // handle file of the wrong format
+    res.status(400)
+    throw new Error('Incorrect File Format') // this doens't work but i can't see a reason my not
+  }
+
+    // set file to a directory with a specific name in that directory
+    file.mv(`${__dirname}/../../frontend/public/uploads/${newFileName}`, err => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send(err); // server error
+        }
+    });
+
+
+
+    const criteria = await Criteria.create({
+      
+      quad: req.body.Quadrant,
+      bathrooms: req.body.bathrooms,
+      bedrooms: req.body.bedrooms,
+      type: req.body.type,
+      furnished: (req.body.furnished === 'Yes'),
+      price: parseInt(req.body.price)
+    })
+    console.log(criteria)
+
+    const property = await Property.create({
+        seller: req.user.id, // set user as well
+        imgPaths: newFileName, //add to array
+        zipCode: req.body.zipCode,
+        city: req.body.city,
+        street: req.body.street,
+        quadrant: req.body.Quadrant,
+        criteria: criteria.id
+        //no tags for now
+      })
+
+
+      const user = await Seller.findOneAndUpdate(
+        { _id: req.user.id },
+        {
+          $push: { listings: property._id } //add to array
+        },
+        {
+          new: true,
+          upsert: false // don't create new obeject
+        }
+      )
+
+      console.log('New Post created ')
+      res.status(200).json(criteria + property)
+
+})
+
+
 
 /**
  * @desc get all properties by page and sort order
@@ -102,5 +185,6 @@ const getProperties = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-  getProperties
+  getProperties,
+  createProperty
 }
