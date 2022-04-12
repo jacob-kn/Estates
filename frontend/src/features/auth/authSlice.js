@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authService from './authService'
+import changeUserService from '../changeUser/changeUserService'
 
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'))
@@ -72,6 +73,82 @@ export const loginSeller = createAsyncThunk(
   async (user, thunkAPI) => {
     try {
       return await authService.loginSeller(user)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+// Change email
+export const updateEmail = createAsyncThunk(
+  'user/change/email',
+  async (email, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await changeUserService.updateEmail(email, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+// Change password
+export const updatePassword = createAsyncThunk(
+  'user/change/password',
+  async (password, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await changeUserService.updatePassword(password, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+// Change company
+export const updateCompany = createAsyncThunk(
+  'user/change/company',
+  async (company, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await changeUserService.updateCompany(company, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+// Delete user
+export const deleteUser = createAsyncThunk(
+  'user/delete',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await changeUserService.deleteUser(token)
     } catch (error) {
       const message =
         (error.response &&
@@ -159,6 +236,58 @@ export const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, state => {
         state.user = null
+      })
+      .addCase(updateEmail.pending, state => {
+        state.isLoading = true
+      })
+      .addCase(updateEmail.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.user.email = action.payload.email
+      })
+      .addCase(updateEmail.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(updatePassword.pending, state => {
+        state.isLoading = true
+      })
+      .addCase(updatePassword.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.message = action.payload
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(updateCompany.pending, state => {
+        state.isLoading = true
+      })
+      .addCase(updateCompany.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.user.company = action.payload.company
+      })
+      .addCase(updateCompany.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(deleteUser.pending, state => {
+        state.isLoading = true
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.user = null
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
       })
   }
 })

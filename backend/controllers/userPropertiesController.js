@@ -123,8 +123,6 @@ const removeFromSavedProperties = asyncHandler(async (req, res) => {
   })
 
   returnSavedProperties(req, res)
-
-  res.status(200).json(user.savedPosts)
 }) //end
 
 // ---
