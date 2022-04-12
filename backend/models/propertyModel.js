@@ -5,30 +5,30 @@ const propertySchema = mongoose.Schema(
     //id is created automatically
     seller: {
       type: mongoose.Schema.Types.ObjectId, //id field will lead to this, this type is an object id
-      required: true, // this is required
+      required: false, // this is required
       ref: 'Seller' // reference to a model of User
     },
     imgPaths: [
       {
         type: String,
-        required: true // this is required
+        required: false // this is required
       }
     ],
     zipCode: {
       type: String,
-      required: true
+      required: false
     },
     city: {
       type: String,
-      required: true
+      required: false
     },
     street: {
       type: String,
-      required: true
+      required: false
     },
     quadrant: {
       type: String,
-      required: true
+      required: false
     },
     criteria: {
       type: mongoose.Schema.Types.ObjectId,
