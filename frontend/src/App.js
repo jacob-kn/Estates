@@ -19,6 +19,8 @@ import ListedProperties from './pages/ListedProperties'
 import Property from './pages/Property'
 import User from './pages/User'
 import AddProperty from './pages/AddProperty'
+import MakeOffer from './pages/MakeOffer'
+import Agreement from './pages/Agreement'
 
 function App () {
   return (
@@ -36,7 +38,9 @@ function App () {
             <Route path='/listed-properties' element={<ListedProperties />} />
             <Route path='/add-property' element={<AddProperty />} />
             <Route path='/property/:id' element={<Property />} />
-            <Route path='/user/:email' element={<User />} />
+            <Route path='/user/:id' element={<User />} />
+            <Route path='/property/:id/make-offer' element={<MakeOffer />} />
+            <Route path='/agreement' element={<Agreement />} />
           </Routes>
         </div>
       </Router>

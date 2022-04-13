@@ -1,7 +1,7 @@
 exports.tmpProps = [
   {
     _id: '1',
-    seller: { email: 'filler@gmail.com', isRealtor: true },
+    seller: { email: 'filler@gmail.com', isRealtor: true, _id: '1' },
     imgPaths: ['/tmp/1.jpg', '/tmp/2.jpg', '/tmp/3.jpg'],
     zipCode: 'X1X 1Y1',
     city: 'Calgary',
@@ -19,7 +19,7 @@ exports.tmpProps = [
   },
   {
     _id: '2',
-    seller: { email: 'testing@gmail.com', isRealtor: true },
+    seller: { email: 'testing@gmail.com', isRealtor: true, _id: '2' },
     imgPaths: ['/tmp/4.jpg', '/tmp/5.jpg'],
     zipCode: 'A1A 2B2',
     city: 'Edmonton',
@@ -37,7 +37,7 @@ exports.tmpProps = [
   },
   {
     _id: '3',
-    seller: { email: 'NotARealtor@gmail.com', isRealtor: false },
+    seller: { email: 'NotARealtor@gmail.com', isRealtor: false,  _id: '3' },
     imgPaths: ['/tmp/6.jpg'],
     zipCode: 'X1X 1Y1',
     city: 'Calgary',
@@ -55,7 +55,7 @@ exports.tmpProps = [
   },
   {
     _id: '4',
-    seller: { email: 'Micro@outlook.com', isRealtor: false },
+    seller: { email: 'Micro@outlook.com', isRealtor: false, _id: '4' },
     imgPaths: ['/tmp/7.jpg'],
     zipCode: 'X1X 1Y1',
     city: 'Calgary',
@@ -73,7 +73,7 @@ exports.tmpProps = [
   },
   {
     _id: '5',
-    seller: { email: 'filler@gmail.com', isRealtor: true },
+    seller: { email: 'filler@gmail.com', isRealtor: true, _id: '5' },
     imgPaths: ['/tmp/8.jpg'],
     zipCode: 'X1X 1Y1',
     city: 'Calgary',
