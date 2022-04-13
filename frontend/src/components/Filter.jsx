@@ -153,9 +153,11 @@ function Filter() {
           sx={{ n: 1, width: 140}}
         />
       </div>
-      <button type='submit' className='btn' onClick={filterProperties}>
-        Filter Properties
-      </button>
+      <div className="submit-button-wrapper">
+        <button type='submit' className='btn btn-block' onClick={filterProperties}>
+          Filter Properties
+        </button>
+        </ div>
     </ div>
   )
 }
