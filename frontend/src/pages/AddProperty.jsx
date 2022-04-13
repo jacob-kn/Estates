@@ -9,7 +9,6 @@ import axios from 'axios';
 
 function AddProperty() {
   const [file, setFile] = useState('');
-  const [filename, setFilename] = useState('Choose a File'); // saves file name in onChangePhoto but not used currently
   const [preview, setPreview] = useState()
 
   
@@ -50,9 +49,12 @@ function AddProperty() {
   useEffect(() => {
     if (!file) {
       setPreview(undefined)
-      setFilename('Choose a File') // set the current file name back if not file
     }else{
-      setPreview(URL.createObjectURL(file)) // for setting a preview of the photo
+      setPreview(<>
+      
+      {file.map(fil => <div><img style={{ width: '100%' }} src = {URL.createObjectURL(fil)} alt='' /></div> )}
+      
+      </>)
     }
 
     if (isError) {   // error in handling things if not all fields are filled
@@ -81,9 +83,12 @@ function AddProperty() {
   };
 
   const onChangePhoto = e => {
-    console.log(e.target.files)
-    setFile(e.target.files[0]);
-    setFilename(e.target.files[0].name);  // setting the name  not the file   
+    var files = e.target.files;
+    var tempfiles = [files[0]]
+    for(var i = 1 ; i < files.length; i ++){
+      tempfiles.push(files[i])
+    }
+    setFile(tempfiles);
   };
 
   const onSubmit = async e => {
@@ -95,45 +100,21 @@ function AddProperty() {
     const furnished = select.value;
     e.preventDefault();
     const formData = new FormData();  // set form data
-    formData.append('file', file);
-    console.log("file: " + formData.get('file'))
+    file.forEach(fil => {
+      formData.append("HousePhotos",fil)
+    })
     formData.append('city', city);
-    console.log("city: " + formData.get('city'))
     formData.append('street', street);
-    console.log("street: " + formData.get('street'))
     formData.append('zipCode', zipCode);
-    console.log("zipCode: " + formData.get('zipCode'))
     formData.append('Quadrant', Quadrant);
-    console.log("Quadrant: " + formData.get('Quadrant'))
     formData.append('bathrooms', bathrooms);
-    console.log("bathrooms: " + formData.get('bathrooms'))
     formData.append('bedrooms', bedrooms);
-    console.log("bedrooms: " + formData.get('bedrooms'))
     formData.append('type', type);
-    console.log("type: " + formData.get('type'))
     formData.append('furnished', furnished);
-    console.log("furnished: " + formData.get('furnished'))
     formData.append('price', price);
-    console.log("price: " + formData.get('price'))
 
 
     dispatch(addProperty(formData)) // send data to upload post
-
-    // const postData = {
-    //   file,
-    //   city, 
-    //   street, 
-    //   zipCode, 
-    //   Quadrant,    
-    //   bathrooms,   
-    //   bedrooms,   
-    //   type,   
-    //   furnished,   
-    //   price,   
-    //   }
-    //   console.log(postData)
-      
-    // dispatch(addProperty(postData)) // send data to upload post
     
   }
 
@@ -153,42 +134,49 @@ function AddProperty() {
       </section>
 
       <section className='form'>
-        <form onSubmit={onSubmit}><div className='form-group'>
+        <form onSubmit={onSubmit}>
+          <div className='form-group'>
+          <label htmlFor ='Quadrant'>
+              City
+            </label>
             <input
               type='city'
               className='form-control'
               id='city'
               name='city'
               value={city}
-              placeholder='Enter city'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
+          <label htmlFor ='Quadrant'>
+              Street
+            </label>
             <input
               type='street'
               className='form-control'
               id='street'
               name='street'
               value={street}
-              placeholder='Confirm street'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
+          <label htmlFor ='Quadrant'>
+              ZipCode
+            </label>
             <input
               type='zipCode'
               className='form-control'
               id='zipCode'
               name='zipCode'
               value={zipCode}
-              placeholder='Enter your zipCode'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
             <label htmlFor ='Quadrant'>
-              Choose a Quadrant
+              Quadrant
             </label>
             <select 
               type='Quadrant'
@@ -203,24 +191,31 @@ function AddProperty() {
 
           </div>
           <div className='form-group'>
+            <label htmlFor ='Quadrant'>
+            Bathrooms
+            </label>
             <input
               type='number'
+              step = '0.5'
+              min = '0'
               className='form-control'
               id='bathrooms'
               name='bathrooms'
               value={bathrooms}
-              placeholder='Enter your bathrooms'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
+            <label htmlFor ='Quadrant'>
+            Bedrooms
+            </label>
             <input
               type='number'
               className='form-control'
+              min = '0'
               id='bedrooms'
               name='bedrooms'
               value={bedrooms}
-              placeholder='Enter your bedrooms'
               onChange={onChange}
             />
           </div>
@@ -256,24 +251,32 @@ function AddProperty() {
                
             </select>
           </div>
-          <div className='form-group'>
+          <div className='form-group'>            
+            <label htmlFor ='Furnished'>
+              Enter your price
+            </label>
             <input
               type='number'
               className='form-control'
+              step = '1000'
               id='price'
+              min = '0'
               name='price'
               value={price}
-              placeholder='Enter your price'
               onChange={onChange}
             />
           </div>
-          <div className='form-group'>
+          <div className='form-group'>            
+            <label htmlFor ='Furnished'>
+              Images
+            </label>
             <input
               className='form-control'
               type="file" 
               accept=".png, .jpeg, .jpg"
               id='customFile'
               name='customFile'
+              multiple
               onChange={onChangePhoto}
             />
           </div>
@@ -286,9 +289,8 @@ function AddProperty() {
 
             {/* display preview of upload */}
             <label className='custom-file-label' htmlFor='customFile'>
-            <h2>{filename}</h2>
-          </label>    
-          <img style={{ width: '100%' }} src = {preview} alt='' />
+          </label>
+          {preview}
         </form>
       </section>
     </>

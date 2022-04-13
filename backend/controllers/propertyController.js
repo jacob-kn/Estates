@@ -12,7 +12,7 @@ const util = require('util')
  */
 const createProperty = asyncHandler(async (req, res) => {
 
-  console.log("req: "+util.inspect(req, {showHidden: false, depth: null, colors: true}))
+
     if (!req.user.id) {
       res.status(400)
       throw new Error('Please add Post Information')
@@ -23,26 +23,39 @@ const createProperty = asyncHandler(async (req, res) => {
         throw new Error('No File Selected') // this doens't work but i can't see a reason my notnpm
     }
 
-    const file = req.files.file;
-    const newFileNameSpaces = Date.now() + file.name // new unique name
+    const file = [req.files.HousePhotos[0]];
+    for(var i = 1; i < req.files.HousePhotos.length ; i ++){
+      file.push(req.files.HousePhotos[i])
+    }
+    const newFileNameSpaces = [Date.now() + file[0].name] // new unique name
+    for(var i = 1; i < req.files.HousePhotos.length ; i ++){
+      newFileNameSpaces.push(Date.now() + file[i].name)
+    }
 
-    const newFileName = newFileNameSpaces.replace(/\s/g, '_')
+    const newFileName = [newFileNameSpaces[0].replace(/\s/g, '_')]
+    for(var i = 1; i < req.files.HousePhotos.length ; i ++){
+      newFileName.push(newFileNameSpaces[i].replace(/\s/g, '_'))
+    }
 
     const acceptedImageTypes = ['image/gif', 'image/jpeg', 
   'image/png', 'image/jpg','image/x-icon'];
 
-  if(!acceptedImageTypes.includes(file.mimetype)){ // handle file of the wrong format
+
+  for(var i = 0; i < req.files.HousePhotos.length ; i ++){  
+    if(!acceptedImageTypes.includes(file[i].mimetype)){ // handle file of the wrong format
     res.status(400)
     throw new Error('Incorrect File Format') // this doens't work but i can't see a reason my not
   }
 
     // set file to a directory with a specific name in that directory
-    file.mv(`${__dirname}/../../frontend/public/uploads/${newFileName}`, err => {
+    file[i].mv(`${__dirname}/../../frontend/public/uploads/${newFileName[i]}`, err => {
         if (err) {
             console.error(err);
             return res.status(500).send(err); // server error
         }
     });
+  }
+
 
 
 
@@ -55,7 +68,6 @@ const createProperty = asyncHandler(async (req, res) => {
       furnished: (req.body.furnished === 'Yes'),
       price: parseInt(req.body.price)
     })
-    console.log(criteria)
 
     const property = await Property.create({
         seller: req.user.id, // set user as well
