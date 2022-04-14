@@ -3,12 +3,14 @@ import authReducer from '../features/auth/authSlice'
 import userPropsReducer from '../features/userProps/userPropsSlice'
 import propertyReducer from '../features/properties/propertySlice'
 import propReducer from '../features/addProperties/addPropertySlice'
+import sellerInfoReducer from '../features/sellerInfo/sellerInfoSlice'
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     properties: propertyReducer,
     userProps: userPropsReducer,
-    addProperties: propReducer
+    addProperties: propReducer,
+    sellerInfo: sellerInfoReducer
   }
 })

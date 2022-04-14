@@ -30,7 +30,7 @@ function CommentsCard (props) {
   // ]
   return (
     <>
-      <section style={{ width: '90%', margin: '0 auto 50px auto' }}>
+      <section style={{ width: '90%', margin: '0 auto' }}>
         <h2>Comments</h2>
 
         {comments && comments.length ? (

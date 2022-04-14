@@ -227,6 +227,8 @@ function MyAccount () {
           </>
         ) : null}
       </section>
+
+      <div style={{ marginBottom: '50px' }} />
     </>
   )
 }

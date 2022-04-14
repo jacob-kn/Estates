@@ -7,6 +7,7 @@ const {
   loginSeller,
   loginBuyer,
   getMe,
+  getSeller,
   deleteMe,
   updateEmail,
   updatePassword,
@@ -31,6 +32,8 @@ router.post('/seller/login', loginSeller) //should be public
 router.post('/buyer/login', loginBuyer) //should be public
 //get current user information
 router.get('/me', protect, getMe) // private/protected
+//get seller information
+router.get('/seller/:id', getSeller) // public
 //delete current user
 router.delete('/', protect, deleteMe) // private/protected
 //update current email

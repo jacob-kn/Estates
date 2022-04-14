@@ -164,7 +164,7 @@ function Property () {
               </Box>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Link to={'/user/' + property.seller.email}>
+              <Link to={'/user/' + property.seller._id}>
                 <Box
                   sx={{
                     display: 'flex',
@@ -180,7 +180,7 @@ function Property () {
                   <Avatar
                     sx={{ bgcolor: stringToColour(property.seller.email) }}
                     component={Link}
-                    to={'/user/' + property.seller.email}
+                    to={'/user/' + property.seller._id}
                   >
                     {property.seller.email.charAt(0)}
                   </Avatar>
@@ -196,17 +196,19 @@ function Property () {
                   </Stack>
                 </Box>
               </Link>
-                {user && user.type === 'buyer' ? (
-                  <Link to={'/property/' + property._id + '/make-offer'}>
-                    <button 
-                      type='submit'
-                      className='btn btn-block'
-                      style={{marginTop: 15}}
-                    >
+              {user && user.type === 'buyer' ? (
+                <Link to={'/property/' + property._id + '/make-offer'}>
+                  <button
+                    type='submit'
+                    className='btn btn-block'
+                    style={{ marginTop: 15 }}
+                  >
                     Make an Offer
-                    </button>
-              </Link>
-            ) : (<></>)}
+                  </button>
+                </Link>
+              ) : (
+                <></>
+              )}
             </Grid>
           </Grid>
         </>

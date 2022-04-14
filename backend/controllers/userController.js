@@ -207,6 +207,33 @@ const getMe = asyncHandler(async (req, res) => {
 }) //end getMe
 
 /**
+ * @desc get seller data
+ * @route GET /api/users/seller/:id
+ * @access private
+ */
+const getSeller = asyncHandler(async (req, res) => {
+  if (!req.params.id) {
+    res.status(400)
+    throw new Error('Empty seller id in parameters')
+  }
+
+  const seller = await Seller.findById(req.params.id)
+    .populate({
+      path: 'comments',
+      populate: { path: 'user', select: 'email' }
+    })
+    .exec()
+
+  res.status(200).json({
+    _id: seller.id, // the created id
+    email: seller.email,
+    isRealtor: seller.isRealtor,
+    company: seller.company,
+    comments: seller.comments
+  })
+}) //end getMe
+
+/**
  * @desc DELETE a user
  * @route DELETE /api/users
  * //need token to access
@@ -428,6 +455,7 @@ module.exports = {
   loginBuyer,
   loginSeller,
   getMe,
+  getSeller,
   deleteMe,
   updateEmail,
   updatePassword,
