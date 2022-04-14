@@ -6,7 +6,7 @@ const API_URL = '/api/users/seller/'
 const getSeller = async id => {
   const response = await axios({
     method: 'get',
-    url: API_URL + id
+    url: API_URL + 'info/' + id
   })
 
   return response.data
