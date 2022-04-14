@@ -10,7 +10,8 @@ const {
   deleteMe,
   updateEmail,
   updatePassword,
-  updateCompany
+  updateCompany,
+  addComment
 } = require('../controllers/userController')
 const {
   getSavedProperties,
@@ -47,9 +48,11 @@ router.post('/buyer/saved-properties/:id', protect, addToSavedProperties) // pri
 router.delete('/buyer/saved-properties/:id', protect, removeFromSavedProperties) // private/protected
 // get listed properties
 router.get('/seller/listings', protect, getListings) // private/protected
-// get listed properties
+// remove listing
 router.delete('/seller/listings/:id', protect, removeFromListings) // private/protected
-// get listed properties
+// update listing
 router.put('/seller/listings/:id', protect, updateListing) // private/protected
+// add comment to realtor
+router.put('/buyer/comment/:rid', protect, addComment) // private/protected
 
 module.exports = router // export the router

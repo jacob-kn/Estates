@@ -3,7 +3,7 @@ import axios from 'axios'
 const API_URL = '/api/users/'
 
 // Change email
-const udpateEmail = async (email, token) => {
+const updateEmail = async (email, token) => {
   const response = await axios({
     method: 'put',
     url: API_URL + 'email',
@@ -34,9 +34,23 @@ const updatePassword = async (password, token) => {
 const updateCompany = async (company, token) => {
   const response = await axios({
     method: 'put',
-    url: API_URL + 'company',
+    url: API_URL + 'realtor/company',
     data: {
       company
+    },
+    headers: { Authorization: 'Bearer ' + token }
+  })
+
+  return response.data
+}
+
+// Add comment
+const addComment = async (comment, rid, token) => {
+  const response = await axios({
+    method: 'put',
+    url: API_URL + 'buyer/comment/' + rid,
+    data: {
+      comment
     },
     headers: { Authorization: 'Bearer ' + token }
   })
@@ -56,9 +70,10 @@ const deleteUser = async token => {
 }
 
 const changeUserService = {
-  udpateEmail,
+  updateEmail,
   updatePassword,
   updateCompany,
+  addComment,
   deleteUser
 }
 
