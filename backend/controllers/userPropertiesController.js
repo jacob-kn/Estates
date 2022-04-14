@@ -30,7 +30,7 @@ const returnSavedProperties = asyncHandler(async (req, res) => {
     res.status(400)
     throw new Error('Could not populate saved posts')
   }
-  res.status(200).json(user.savedPosts)
+  res.status(200).json(user.savedProperties)
 })
 
 /**
@@ -229,50 +229,6 @@ const updateListing = asyncHandler(async (req, res) => {
   returnListings(req, res)
 }) //end
 
-//@desc add collection
-//@route  POST collection /api/collections/
-//@access private
-const tmpAdd = asyncHandler(async (req, res) => {
-  const {
-    quadrant: quad,
-    bathrooms,
-    bedrooms,
-    type,
-    furnished,
-    price,
-    zipCode,
-    city,
-    street,
-    quadrant
-  } = req.body
-
-  const criteria = await Criteria.create({
-    quad,
-    bathrooms,
-    bedrooms,
-    type,
-    furnished,
-    price
-  })
-  const property = await Property.create({
-    zipCode,
-    city,
-    street,
-    quadrant,
-    criteria: criteria._id,
-    seller: req.user.id,
-    imgPaths: []
-  })
-
-  const user = await Seller.findByIdAndUpdate(req.user.id, {
-    $push: { listings: property._id }
-  })
-
-  res.status(200).json({
-    message: `listing added`
-  })
-}) //end
-
 // ---
 
 //exports
@@ -282,6 +238,5 @@ module.exports = {
   removeFromSavedProperties,
   getListings,
   removeFromListings,
-  updateListing,
-  tmpAdd
+  updateListing
 }

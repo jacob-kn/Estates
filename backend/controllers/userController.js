@@ -144,7 +144,12 @@ const loginBuyer = asyncHandler(async (req, res) => {
 const loginSeller = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
-  const user = await Seller.findOne({ email }) /// find by email
+  const user = await Seller.findOne({ email }) // find by email
+    .populate({
+      path: 'comments',
+      populate: { path: 'user', select: 'email' }
+    })
+    .exec()
 
   //password is hashed need to bcyrpt method called compare
   if (user && (await bcrypt.compare(password, user.password))) {
@@ -155,6 +160,7 @@ const loginSeller = asyncHandler(async (req, res) => {
       type: 'seller',
       isRealtor: user.isRealtor,
       company: user.company,
+      comments: user.comments,
       token: generateToken(user._id) //also send token to user
     })
   } else {
@@ -175,6 +181,11 @@ const getMe = asyncHandler(async (req, res) => {
   let user = await Buyer.findById(req.user.id)
   if (!user) {
     user = await Seller.findById(req.user.id)
+      .populate({
+        path: 'comments',
+        populate: { path: 'user', select: 'email' }
+      })
+      .exec()
     res.status(200).json({
       // return current withthe jwt
       _id: user.id, // the created id
@@ -182,6 +193,7 @@ const getMe = asyncHandler(async (req, res) => {
       type: 'seller',
       isRealtor: user.isRealtor,
       company: user.company,
+      comments: user.comments,
       token: generateToken(user._id) //also send token to user
     })
   } else {
@@ -192,6 +204,33 @@ const getMe = asyncHandler(async (req, res) => {
       token: generateToken(user._id) //also send token to user
     })
   }
+}) //end getMe
+
+/**
+ * @desc get seller data
+ * @route GET /api/users/seller/:id
+ * @access private
+ */
+const getSeller = asyncHandler(async (req, res) => {
+  if (!req.params.id) {
+    res.status(400)
+    throw new Error('Empty seller id in parameters')
+  }
+
+  const seller = await Seller.findById(req.params.id)
+    .populate({
+      path: 'comments',
+      populate: { path: 'user', select: 'email' }
+    })
+    .exec()
+
+  res.status(200).json({
+    _id: seller.id, // the created id
+    email: seller.email,
+    isRealtor: seller.isRealtor,
+    company: seller.company,
+    comments: seller.comments
+  })
 }) //end getMe
 
 /**
@@ -238,6 +277,22 @@ const updateEmail = asyncHandler(async (req, res) => {
   //set up fields to update
   const filter = { _id: req.user.id }
   const update = { email }
+
+  if (req.user.isRealtor === undefined) {
+    //check to see if email already exisits in the buyer database
+    const buyerExists = await Buyer.findOne({ email }) // access database to see if user already exists
+    if (buyerExists) {
+      res.status(400)
+      throw new Error('Buyer Already Exists')
+    }
+  } else {
+    //check to see if email already exisits in the seller database
+    const sellerExists = await Seller.findOne({ email }) // access database to see if user already exists
+    if (sellerExists) {
+      res.status(400)
+      throw new Error('Seller Already Exists')
+    }
+  }
 
   let user = await Buyer.findByIdAndUpdate(filter, update, {
     new: true
@@ -327,6 +382,64 @@ const updateCompany = asyncHandler(async (req, res) => {
   })
 }) //end updateCompany
 
+/**
+ * @desc add comment
+ * @route PUT /api/users/buyer/comment/:rid
+ * //need token to access
+ * for when a user is already loged in
+ * need jwt in the authorization to access
+ *
+ * error check taken care of by authMiddleware.js
+ *
+ * @access private
+ */
+const addComment = asyncHandler(async (req, res) => {
+  if (req.user.isRealtor !== undefined) {
+    // user must be a buyer to comment
+    res.status(400) // 400 Bad Request
+    throw new Error('Current user is not a buyer')
+  }
+
+  if (!req.params.rid) {
+    res.status(400)
+    throw new Error('Empty realtor id in parameters')
+  }
+
+  const { comment } = req.body
+  if (!comment) {
+    res.status(400)
+    throw new Error('Please add a comment')
+  }
+
+  const completeComment = {
+    user: req.user.id,
+    comment
+  }
+
+  //set up fields to update
+  const filter = { _id: req.params.rid }
+  const update = { $push: { comments: completeComment } }
+
+  const seller = await Seller.findById(filter)
+  if (!seller.isRealtor) {
+    res.status(400)
+    throw new Error('Error: this seller is not a realtor')
+  }
+
+  let user = await Seller.findByIdAndUpdate(filter, update, {
+    new: true
+  })
+    .populate({
+      path: 'comments',
+      populate: { path: 'user', select: 'email' }
+    })
+    .exec()
+
+  res.status(200).json({
+    comments: user.comments // updated comments
+  })
+}) //end addComment
+
 //Generate JWT Function
 const generateToken = id => {
   //an id, the enviroment variable secret
@@ -342,8 +455,10 @@ module.exports = {
   loginBuyer,
   loginSeller,
   getMe,
+  getSeller,
   deleteMe,
   updateEmail,
   updatePassword,
-  updateCompany
+  updateCompany,
+  addComment
 }

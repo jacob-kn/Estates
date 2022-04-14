@@ -5,6 +5,7 @@ const buyerSchema = mongoose.Schema(
     //id is created automatically
     email: {
       type: String,
+      unique: true,
       required: [true, 'Please add an email']
     },
     password: {

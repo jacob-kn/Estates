@@ -2,23 +2,52 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { reset } from '../features/auth/authSlice'
 import { toast } from 'react-toastify'
 import { FaUser } from 'react-icons/fa'
-import { GrAdd } from 'react-icons/gr' // icons
+import Spinner from '../components/Spinner'
 import CommentsCard from '../components/Comments'
+import Divider from '@mui/material/Divider'
+import {
+  updateCompany,
+  updateEmail,
+  updatePassword
+} from '../features/auth/authSlice'
 
 function MyAccount () {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPass: '',
+    password2: '',
     company: ''
   })
 
-  const { email, password, confirmPass, company } = formData
+  const { email, password, password2, company } = formData
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    state => state.auth
+  )
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message)
+    }
+
+    if (!user) {
+      dispatch(reset())
+      navigate('/')
+    }
+
+    if (isSuccess) {
+      toast.success('Successfully updated')
+    }
+
+    return () => {
+      dispatch(reset())
+    }
+  }, [user, isError, isSuccess, message, navigate, dispatch])
 
   const onChange = e => {
     console.log(e.target.value)
@@ -28,31 +57,39 @@ function MyAccount () {
     }))
   }
 
-  const onSubmit = e => {
-    var select = document.getElementById('Quadrant')
-    console.log(select.value)
-    const Quadrant = select.value
+  const changeEmail = e => {
     e.preventDefault()
 
-    const postData = {
-      email,
-      password,
-      confirmPass
-    }
-    console.log(postData)
+    dispatch(updateEmail(email))
+
+    setFormData({ email: '' })
   }
 
-  const { user } = useSelector(state => state.auth) // get user
+  const changePass = e => {
+    e.preventDefault()
+
+    if (password !== password2) {
+      toast.error('Passwords do not match')
+    } else {
+      dispatch(updatePassword(password))
+      setFormData({ password: '', password2: '' })
+    }
+  }
+
+  const changeCompany = e => {
+    e.preventDefault()
+
+    dispatch(updateCompany(company))
+
+    setFormData({ company: '' })
+  }
+
   let module = require('./tmpRealtor.js')
   let tmpRealtor = module.tmpRealtor
 
-  /**
-  const temp = "HOW DO I PRINT THIS"
-  console.log(user)
-  if(user && user.type === 'seller'){
-    console.log(user.isRealtor)
+  if (isLoading) {
+    return <Spinner />
   }
- */
 
   return (
     <>
@@ -79,88 +116,119 @@ function MyAccount () {
           </>
         ) : null}
       </section>
-      <section className='User info'>
-        <form onSubmit={onSubmit}>
-          <h2>Change email</h2>
-          <label>
-            {tmpRealtor.map(realtor => (
-              <>{user.email}</>
-            ))}
-          </label>
-          <span className='change'>
+      <section className='form'>
+        <Divider sx={{ mb: 1.5 }} textAlign='left'>
+          Edit Email
+        </Divider>
+        <form onSubmit={changeEmail}>
+          <div className='form-group'>
+            <label for='email'>
+              Current email: <strong>{user.email}</strong>
+            </label>
             <input
-              type='email'
+              className='textGradient'
+              type='text'
               id='email'
               name='email'
               value={email}
-              placeholder='Enter new email here'
+              placeholder='New email'
               onChange={onChange}
             />
-          </span>
-          <h2>
-            Change Password<br></br>
-            <span className='change'>
-              <input
-                type='password'
-                id='password'
-                name='password'
-                value={password}
-                placeholder='Enter your new password'
-                onChange={onChange}
-              />
-              <input
-                type='confirmPass'
-                id='confirmPass'
-                name='confirmPass'
-                value={confirmPass}
-                placeholder='confirm your new password'
-                onChange={onChange}
-              />
-            </span>
-          </h2>
-          <section>
-            {user && user.type === 'seller' && user.isRealtor ? (
-              <>
-                <h2>Change company </h2>
-                <label>
-                  {' '}
-                  {tmpRealtor.map(realtor => (
-                    <>{realtor.company}</>
-                  ))}{' '}
-                </label>
-                <span className='change'>
-                  <input
-                    type='company'
-                    id='company'
-                    name='company'
-                    value={company}
-                    placeholder='Enter new company'
-                    onChange={onChange}
-                  />
-                </span>
-              </>
-            ) : null}
-          </section>
+          </div>
+
+          <div className='form-group'>
+            <button type='submit' name='nameButton' className='btn btn-block'>
+              Change email
+            </button>
+          </div>
         </form>
+
+        <Divider sx={{ mb: 1.5 }} textAlign='right'>
+          Edit Password
+        </Divider>
+
+        <form onSubmit={changePass}>
+          <div className='form-group'>
+            <input
+              className='textGradient'
+              type='password'
+              id='password'
+              name='password'
+              value={password}
+              placeholder='New password'
+              onChange={onChange}
+            />
+          </div>
+
+          <div className='form-group'>
+            <input
+              className='textGradient'
+              type='password'
+              id='password'
+              name='password2'
+              value={password2}
+              placeholder='Confirm password'
+              onChange={onChange}
+            />
+          </div>
+
+          <div className='form-group'>
+            <button
+              type='submit'
+              name='passwordButton'
+              className='btn btn-block'
+            >
+              Change password
+            </button>
+          </div>
+        </form>
+
+        {user.type === 'seller' && user.isRealtor ? (
+          <>
+            <Divider sx={{ mb: 1.5 }}>Edit Company</Divider>
+
+            <form onSubmit={changeCompany}>
+              <div className='form-group'>
+                <label for='company'>
+                  Current company: <strong>{user.company}</strong>
+                </label>
+                <input
+                  className='textGradient'
+                  type='text'
+                  id='company'
+                  name='company'
+                  value={company}
+                  placeholder='New company'
+                  onChange={onChange}
+                />
+              </div>
+
+              <div className='form-group'>
+                <button
+                  type='submit'
+                  name='nameButton'
+                  className='btn btn-block'
+                >
+                  Change company
+                </button>
+              </div>
+            </form>
+          </>
+        ) : null}
       </section>
-      <div className='form-group'>
-        <button type='submit' className='btn btn-block'>
-          Submit
-        </button>
-      </div>
 
       <section className='Comments'>
         {user && user.type === 'seller' && user.isRealtor ? (
           <>
             <br></br>
             <label htmlFor='Comment'>
-              {tmpRealtor.map(realtor => (
-                <CommentsCard comment={realtor.Comments} />
-              ))}
+              <CommentsCard comments={user.comments} />
             </label>
           </>
         ) : null}
       </section>
+
+      <div style={{ marginBottom: '50px' }} />
     </>
   )
 }
