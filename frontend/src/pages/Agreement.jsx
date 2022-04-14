@@ -20,7 +20,7 @@ function Agreement () {
       <br />
       <p style={{lineHeight:1.5}}>
         <b>THIS OFFER TO PURCHASE REAL ESTATE (the "Offer"), DATED&nbsp;
-        {agreement.offerDate.toLocaleDateString('en-ca', dateOptions)}
+        {agreement.createdAt.toLocaleDateString('en-ca', dateOptions)}
         &nbsp;(the "Offer Date"),</b>
       </p>
       <br />
@@ -174,9 +174,9 @@ function Agreement () {
               <li style={{lineHeight:1.5}}>
                 The seller must provide the Buyer with a real property report 
                 prepared by a licensed Alberta land surveyor on or before&nbsp;
-                {agreement.offerDate.toLocaleDateString('en-ca', dateOptions)}. 
+                {agreement.createdAt.toLocaleDateString('en-ca', dateOptions)}. 
                 The Buyer can always waive this condition on or before&nbsp;
-                {agreement.offerDate.toLocaleDateString('en-ca', dateOptions)}.
+                {agreement.createdAt.toLocaleDateString('en-ca', dateOptions)}.
               </li>
             </ol>
           ) : (<></>)}
@@ -220,8 +220,8 @@ function Agreement () {
           </tbody>
           <tbody>
             <tr>
-              <td>E-mail: {agreement.buyerEmail}</td>
-              <td>E-mail: {agreement.buyerEmail}</td> 
+              <td>E-mail: {agreement.buyer.email}</td>
+              <td>E-mail: {agreement.seller.email}</td> 
             </tr>
           </tbody>
         </table>
@@ -286,7 +286,7 @@ function Agreement () {
             </td>
             <td>
               Date:&nbsp;
-              {agreement.offerDate.toLocaleDateString('en-ca', dateOptions)}
+              {agreement.createdAt.toLocaleDateString('en-ca', dateOptions)}
             </td> 
           </tr>
         </tbody>
@@ -304,7 +304,7 @@ function Agreement () {
         <b><u>Seller's Acceptance/Rejection</u></b>
       </p>
       <br />
-      {agreement.acceptanceDate != null ? (
+      {agreement.dateSigned != null && !agreement.rejected ? (
         <>
           <p style={{lineHeight:1.5}}>
             <b>Acceptance of offer to purchase:</b> The Seller accepts the 
@@ -328,11 +328,11 @@ function Agreement () {
                   </span>
                 </td>
                 <td>
-                  {agreement.acceptanceDate.toLocaleDateString(
+                  {agreement.dateSigned.toLocaleDateString(
                     'en-ca', dateOptions)}
                 </td> 
                   <td>
-                  {agreement.acceptanceDate.toLocaleTimeString(
+                  {agreement.dateSigned.toLocaleTimeString(
                     'en-ca', timeOptions)}
                   </td> 
               </tr>
@@ -362,7 +362,7 @@ function Agreement () {
           <br />
         </>
       ) : (<></>)}
-      {agreement.rejectionDate != null ? (
+      {agreement.dateSigned != null && agreement.rejected ? (
       <>
         <p style={{lineHeight:1.5}}>
           <b>Rejection:</b> The Seller rejects the foregoing Offer.
@@ -384,10 +384,10 @@ function Agreement () {
                 </span>
               </td>
               <td>
-                {agreement.rejectionDate.toLocaleDateString('en-ca', dateOptions)}
+                {agreement.dateSigned.toLocaleDateString('en-ca', dateOptions)}
               </td> 
               <td>
-                {agreement.rejectionDate.toLocaleTimeString('en-ca', timeOptions)}
+                {agreement.dateSigned.toLocaleTimeString('en-ca', timeOptions)}
               </td> 
             </tr>
           </tbody>
@@ -424,15 +424,9 @@ function Agreement () {
             </td>
             <td>
               Date:&nbsp;
-              {agreement.acceptanceDate != null ? (
+              {agreement.dateSigned != null ? (
                 <>
-                  {agreement.acceptanceDate.toLocaleDateString(
-                    'en-ca', dateOptions)}
-                </>
-              ) : (<></>)}
-              {agreement.rejectionDate != null ? (
-                <>
-                  {agreement.rejectionDate.toLocaleDateString(
+                  {agreement.dateSigned.toLocaleDateString(
                     'en-ca', dateOptions)}
                 </>
               ) : (<></>)}
