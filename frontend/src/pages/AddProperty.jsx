@@ -2,10 +2,16 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { FaUser } from 'react-icons/fa'
 import { GrAdd } from 'react-icons/gr' // icons
+import { addProperty, reset } from '../features/addProperties/addPropertySlice'
+import Spinner from '../components/Spinner'
+import axios from 'axios';
 
 function AddProperty() {
+  const [file, setFile] = useState('');
+  const [preview, setPreview] = useState()
+
+  
   const [formData, setFormData] = useState({
     city: '',
     street: '',
@@ -16,7 +22,6 @@ function AddProperty() {
     type: '',
     furnished: '',
     price: '',
-    imgPath: ''
   })
 
   const { city, 
@@ -27,42 +32,94 @@ function AddProperty() {
           bedrooms,   
           type,   
           furnished,   
-          price,    
-          imgPath
+          price,   
         } = formData
 
+  const { user } = useSelector( // get user information
+    state => state.auth
+  )
+  const { property , isLoading, isError, isSuccess, message } = useSelector(
+    state => state.addProperties
+  )
+
+        
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const onChange = e => {
-    console.log(e.target.value)
-    setFormData(prevState => ({
-      ...prevState,
-      [e.target.name]: e.target.value
+  useEffect(() => {
+    if (!file) {
+      setPreview(undefined)
+    }else{
+      setPreview(<>
       
-    }))
+      {file.map(fil => <div><img style={{ width: '100%' }} src = {URL.createObjectURL(fil)} alt='' /></div> )}
+      
+      </>)
+    }
+
+    if (isError) {   // error in handling things if not all fields are filled
+      toast.error(message)
+    }
+
+    if (!user) {   // shouldn't need this part but good to have
+      navigate('/login')
+    }
+
+    if (isSuccess ) {  // everything worked
+      toast('Post Uploaded')
+      navigate('/') // go to dashboard
+    }
+
+    return () => {
+      dispatch(reset()) // reset the variables
+    }
+  }, [file, user, property, isLoading, isError, isSuccess, message, dispatch, navigate])
+
+
+  const onChange = e => {
+    setFormData({
+      ...formData,[e.target.name]: e.target.value
+    })
+  };
+
+  const onChangePhoto = e => {
+    var files = e.target.files;
+    var tempfiles = [files[0]]
+    for(var i = 1 ; i < files.length; i ++){
+      tempfiles.push(files[i])
+    }
+    setFile(tempfiles);
+  };
+
+  const onSubmit = async e => {
+    var select = document.getElementById("Quadrant");
+    const Quadrant = select.value;
+    var select = document.getElementById("Type");
+    const type = select.value;
+    var select = document.getElementById("Furnished");
+    const furnished = select.value;
+    e.preventDefault();
+    const formData = new FormData();  // set form data
+    file.forEach(fil => {
+      formData.append("HousePhotos",fil)
+    })
+    formData.append('city', city);
+    formData.append('street', street);
+    formData.append('zipCode', zipCode);
+    formData.append('Quadrant', Quadrant);
+    formData.append('bathrooms', bathrooms);
+    formData.append('bedrooms', bedrooms);
+    formData.append('type', type);
+    formData.append('furnished', furnished);
+    formData.append('price', price);
+
+
+    dispatch(addProperty(formData)) // send data to upload post
+    
   }
 
-  const onSubmit = e => {
-    var select = document.getElementById("Quadrant");
-    console.log(select.value);
-    const Quadrant = select.value;
-    e.preventDefault()
-
-    const postData = {
-      city, 
-      street, 
-      zipCode, 
-      Quadrant,    
-      bathrooms,   
-      bedrooms,   
-      type,   
-      furnished,   
-      price,    
-      imgPath
-      }
-      console.log(postData)
-    
+  if (isLoading) { // for loading
+    return <Spinner />
   }
 
 
@@ -77,42 +134,49 @@ function AddProperty() {
       </section>
 
       <section className='form'>
-        <form onSubmit={onSubmit}><div className='form-group'>
+        <form onSubmit={onSubmit}>
+          <div className='form-group'>
+          <label htmlFor ='Quadrant'>
+              City
+            </label>
             <input
               type='city'
               className='form-control'
               id='city'
               name='city'
               value={city}
-              placeholder='Enter city'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
+          <label htmlFor ='Quadrant'>
+              Street
+            </label>
             <input
               type='street'
               className='form-control'
               id='street'
               name='street'
               value={street}
-              placeholder='Confirm street'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
+          <label htmlFor ='Quadrant'>
+              ZipCode
+            </label>
             <input
               type='zipCode'
               className='form-control'
               id='zipCode'
               name='zipCode'
               value={zipCode}
-              placeholder='Enter your zipCode'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
             <label htmlFor ='Quadrant'>
-              Choose a Quadrant
+              Quadrant
             </label>
             <select 
               type='Quadrant'
@@ -127,24 +191,31 @@ function AddProperty() {
 
           </div>
           <div className='form-group'>
+            <label htmlFor ='Quadrant'>
+            Bathrooms
+            </label>
             <input
               type='number'
+              step = '0.5'
+              min = '0'
               className='form-control'
               id='bathrooms'
               name='bathrooms'
               value={bathrooms}
-              placeholder='Enter your bathrooms'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
+            <label htmlFor ='Quadrant'>
+            Bedrooms
+            </label>
             <input
               type='number'
               className='form-control'
+              min = '0'
               id='bedrooms'
               name='bedrooms'
               value={bedrooms}
-              placeholder='Enter your bedrooms'
               onChange={onChange}
             />
           </div>
@@ -180,26 +251,33 @@ function AddProperty() {
                
             </select>
           </div>
-          <div className='form-group'>
+          <div className='form-group'>            
+            <label htmlFor ='Furnished'>
+              Enter your price
+            </label>
             <input
               type='number'
               className='form-control'
+              step = '1000'
               id='price'
+              min = '0'
               name='price'
               value={price}
-              placeholder='Enter your price'
               onChange={onChange}
             />
           </div>
-          <div className='form-group'>
+          <div className='form-group'>            
+            <label htmlFor ='Furnished'>
+              Images
+            </label>
             <input
-              type='File'
               className='form-control'
-              id='imgPath'
-              name='imgPath'
-              value={imgPath}
-              placeholder='Enter your imgPath'
-              onChange={onChange}
+              type="file" 
+              accept=".png, .jpeg, .jpg"
+              id='customFile'
+              name='customFile'
+              multiple
+              onChange={onChangePhoto}
             />
           </div>
           
@@ -208,6 +286,11 @@ function AddProperty() {
               Submit
             </button>
           </div>
+
+            {/* display preview of upload */}
+            <label className='custom-file-label' htmlFor='customFile'>
+          </label>
+          {preview}
         </form>
       </section>
     </>

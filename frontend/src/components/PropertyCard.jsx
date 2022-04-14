@@ -213,13 +213,13 @@ function PropertyCard (props) {
               '&:hover': { opacity: 0.7 }
             }}
             component={Link}
-            to={'/user/' + property.seller.email}
+            to={'/user/' + property.seller._id}
           >
             {property.seller.email.charAt(0)}
           </Avatar>
         }
         title={
-          <Link to={'/user/' + property.seller.email} className='greyHover'>
+          <Link to={'/user/' + property.seller._id} className='greyHover'>
             {property.seller.isRealtor ? (
               <span style={{ fontWeight: 'bolder' }}>Realtor: </span>
             ) : null}

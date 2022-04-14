@@ -196,6 +196,17 @@ function Property () {
                   </Stack>
                 </Box>
               </Link>
+                {user && user.type === 'buyer' ? (
+                  <Link to={'/property/' + property._id + '/make-offer'}>
+                    <button 
+                      type='submit'
+                      className='btn btn-block'
+                      style={{marginTop: 15}}
+                    >
+                    Make an Offer
+                    </button>
+              </Link>
+            ) : (<></>)}
             </Grid>
           </Grid>
         </>

@@ -3,6 +3,108 @@ const Property = require('../models/propertyModel')
 const Seller = require('../models/sellerModel')
 const Criteria = require('../models/criteriaModel')
 const valid = require('../middleware/validateID')
+const util = require('util')
+
+/**
+ * @desc create a new property and criteria
+ * @route GET /api/properties/
+ * @access private
+ */
+const createProperty = asyncHandler(async (req, res) => {
+
+
+  if (!req.user.id) {
+    res.status(400)
+    throw new Error('Please add Post Information')
+  }
+
+  if (req.files === null) { // check that there is a file attached
+    res.status(400)
+    throw new Error('No File Selected') // this doens't work but i can't see a reason my notnpm
+  }
+  const acceptedImageTypes = ['image/gif', 'image/jpeg',
+    'image/png', 'image/jpg', 'image/x-icon'];
+  if (req.files.HousePhotos[0] === undefined) {
+    req.files.HousePhotos = [req.files.HousePhotos];
+  }
+  const file = [req.files.HousePhotos[0]];
+  for (var i = 1; i < req.files.HousePhotos.length; i++) {
+    file.push(req.files.HousePhotos[i])
+  }
+  const newFileNameSpaces = [Date.now() + file[0].name] // new unique name
+  for (var i = 1; i < req.files.HousePhotos.length; i++) {
+    newFileNameSpaces.push(Date.now() + file[i].name)
+  }
+
+  const newFileName = [newFileNameSpaces[0].replace(/\s/g, '_')]
+  for (var i = 1; i < req.files.HousePhotos.length; i++) {
+    newFileName.push(newFileNameSpaces[i].replace(/\s/g, '_'))
+  }
+
+
+
+
+  for (var i = 0; i < req.files.HousePhotos.length; i++) {
+    if (!acceptedImageTypes.includes(file[i].mimetype)) { // handle file of the wrong format
+      res.status(400)
+      throw new Error('Incorrect File Format') // this doens't work but i can't see a reason my not
+    }
+
+    // set file to a directory with a specific name in that directory
+    file[i].mv(`${__dirname}/../../frontend/public/uploads/${newFileName[i]}`, err => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err); // server error
+      }
+    });
+  }
+
+
+
+
+
+
+
+
+  const criteria = await Criteria.create({
+
+    quad: req.body.Quadrant,
+    bathrooms: req.body.bathrooms,
+    bedrooms: req.body.bedrooms,
+    type: req.body.type,
+    furnished: (req.body.furnished === 'Yes'),
+    price: parseInt(req.body.price)
+  })
+
+  const property = await Property.create({
+    seller: req.user.id, // set user as well
+    imgPaths: newFileName, //add to array
+    zipCode: req.body.zipCode,
+    city: req.body.city,
+    street: req.body.street,
+    quadrant: req.body.Quadrant,
+    criteria: criteria.id
+    //no tags for now
+  })
+
+
+  const user = await Seller.findOneAndUpdate(
+    { _id: req.user.id },
+    {
+      $push: { listings: property._id } //add to array
+    },
+    {
+      new: true,
+      upsert: false // don't create new obeject
+    }
+  )
+
+  console.log('New Post created ')
+  res.status(200).json(criteria + property)
+
+})
+
+
 
 /**
  * @desc get all properties by page and sort order
@@ -214,5 +316,6 @@ const countProperties = asyncHandler(async (req, res) => {
 module.exports = {
   getProperties,
   countProperties,
-  getProperty
+  getProperty,
+  createProperty
 }

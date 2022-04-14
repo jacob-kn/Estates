@@ -2,12 +2,15 @@
 const express = require('express') // get express
 const router = express.Router() // set up express router
 const {
+  createProperty,
   getProperties,
   countProperties,
   getProperty
 } = require('../controllers/propertyController')
 const { protect } = require('../middleware/authMiddleware') // to make routes private (need JWT)
 
+// create new property
+router.post('/',protect, createProperty)
 //get properties on a page
 router.post('/page/:page', getProperties)
 //count all properties
