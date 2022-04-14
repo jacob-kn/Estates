@@ -5,6 +5,7 @@ const sellerSchema = mongoose.Schema(
     //id is created automatically
     email: {
       type: String,
+      unique: true,
       required: [true, 'Please add an email']
     },
     password: {
@@ -27,14 +28,16 @@ const sellerSchema = mongoose.Schema(
         ref: 'Property' // reference to a model of Property
       }
     ],
-    fee: {
-      amount: { type: String },
-      period: {
-        startDate: { type: Date },
-        endDate: { type: Date }
-      },
-      required: false
-    }
+    comments: [
+      {
+        comment: { type: String, required: false },
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: false,
+          ref: 'Buyer'
+        }
+      }
+    ]
   },
   {
     timestamps: true // automatically creates time stamps for updated and created

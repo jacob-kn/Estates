@@ -244,11 +244,13 @@ h3 {
   display: flex;
   justify-content: center;
   flex: 1;
+  min-width: 0;
 }
 
 .btnOption div button {
   flex: 1;
   margin: 0px 30px;
+  min-width: 0;
 }
 
 .properties {

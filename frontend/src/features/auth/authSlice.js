@@ -142,6 +142,26 @@ export const updateCompany = createAsyncThunk(
   }
 )
 
+// Add comment
+export const addComment = createAsyncThunk(
+  'user/buyer/add-comment',
+  async (data, thunkAPI) => {
+    try {
+      const { comment, rid } = data
+      const token = thunkAPI.getState().auth.user.token
+      return await changeUserService.addComment(comment, rid, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
 // Delete user
 export const deleteUser = createAsyncThunk(
   'user/delete',
@@ -272,6 +292,19 @@ export const authSlice = createSlice({
         state.user.company = action.payload.company
       })
       .addCase(updateCompany.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(addComment.pending, state => {
+        state.isLoading = true
+      })
+      .addCase(addComment.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.user.comments = action.payload.comments
+      })
+      .addCase(addComment.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
