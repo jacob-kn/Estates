@@ -1,17 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
 import { IoDocumentTextOutline } from 'react-icons/io5'
 import DatePicker from 'react-datepicker'
+import Spinner from '../components/Spinner'
 import "react-datepicker/dist/react-datepicker.css";
-
+import { addAgreement, reset } from '../features/agreements/agreementsSlice'
 
 function MakeOffer () {
   let { id } = useParams()
-
-  const auth = useSelector(state => state.auth)
-  const user = auth.user
   
   let module = require('./tmpProps.js')
   let tmpProps = module.tmpProps
@@ -35,9 +34,44 @@ function MakeOffer () {
     landSurveyRequested,
   } = formData
 
+  const { user } = useSelector( // get user information
+    state => state.auth
+  )
+  const { agreement, isLoading, isError, isSuccess, message } = useSelector(
+    state => state.addAgreement
+  )
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  useEffect(() => {
+
+    if (isError) { // error in handling things if not all fields are filled
+      toast.error(message)
+    }
+
+    if (!user) { // shouldn't need this part but good to have
+      navigate('/login')
+    }
+
+    if (isSuccess) {
+      toast('Offer Sent')
+      //navigate('/') // go to dashboard
+    }
+
+    return () => {
+      dispatch(reset()) // reset the variables
+    }
+  }, [
+    user, 
+    isLoading, 
+    isError, 
+    isSuccess,
+    message,
+    dispatch,
+    navigate,
+  ])
+  
   const onChange = e => {
     const value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value
@@ -48,6 +82,8 @@ function MakeOffer () {
   }
 
   const onSubmit = async e => {
+    e.preventDefault();
+
     const agreementData = new FormData(); // set form data
     agreementData.append('propertyId', property._id);
     agreementData.append('sellerId', property.seller._id);
@@ -58,6 +94,12 @@ function MakeOffer () {
     agreementData.append('offerExpiration', offerExpiration);
     agreementData.append('closingDate', closingDate);
     agreementData.append('landSurveyRequested', formData.landSurveyRequested);
+
+    dispatch(addAgreement(agreementData))
+  }
+
+  if (isLoading) {
+    return <Spinner />
   }
 
   return (
@@ -144,6 +186,7 @@ function MakeOffer () {
               </button>
           </div>
         </form>
+        <br />
       </section>
     </>
   )
