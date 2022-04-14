@@ -17,7 +17,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  useMediaQuery
+  useMediaQuery,
+  typographyClasses
 } from '@mui/material'
 
 import {
@@ -30,9 +31,17 @@ import {
 } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { Currency } from 'react-intl-number-format'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react'
 import Select from 'react-select'
+import { toast } from 'react-toastify'
+
+import {
+  addToSavedProperties,
+  removeFromSavedProperties,
+  removeFromListings,
+  updateListing
+} from '../features/userProps/userPropsSlice'
 
 const theme = createTheme({
   palette: {
@@ -46,22 +55,49 @@ const theme = createTheme({
   }
 })
 
+var stringToColour = function (str) {
+  var hash = 0
+  for (var i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  var colour = '#'
+  for (var i = 0; i < 3; i++) {
+    var value = (hash >> (i * 8)) & 0xff
+    colour += ('00' + value.toString(16)).substr(-2)
+  }
+  return colour
+}
+
 function PropertyCard (props) {
-  const { property, browse } = props
+  const dispatch = useDispatch()
+
+  const { property, browse, saved } = props
 
   const imgs = property.imgPaths.map(
-    imgPath => process.env.PUBLIC_URL + imgPath
+    imgPath => process.env.PUBLIC_URL + '/uploads/' + imgPath
   )
 
   const addrStr = `${property.street} ${property.quadrant}, ${property.city}`
 
-  // Randomize avatar colour
-  const avatarColours = ['#ffc3a0', '#848463', 'fb968a', '#a0c5c4', '#86664b']
-  const randomAvColour =
-    avatarColours[Math.floor(Math.random() * avatarColours.length)]
+  const { user } = useSelector(state => state.auth)
 
-  const auth = useSelector(state => state.auth)
-  const user = auth.user
+  // -- Save function ---
+
+  const [isSaved, setIsSaved] = useState(saved)
+
+  const handleSave = () => {
+    if (!isSaved) {
+      dispatch(addToSavedProperties(property._id))
+      setIsSaved(true)
+      toast.success('Property saved')
+    } else {
+      dispatch(removeFromSavedProperties(property._id))
+      setIsSaved(false)
+      toast.success('Property removed from saved')
+    }
+  }
+
+  // --- Edit modal ---
 
   const [open, setOpen] = useState(false)
 
@@ -76,16 +112,15 @@ function PropertyCard (props) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
 
   const [formData, setFormData] = useState({
-    city: '',
-    street: '',
-    zipCode: '',
-    Quadrant: '',
-    bathrooms: '',
-    bedrooms: '',
-    type: '',
-    furnished: '',
-    price: '',
-    imgPath: ''
+    city: property.city,
+    street: property.street,
+    zipCode: property.zipCode,
+    Quadrant: property.quadrant,
+    bathrooms: property.criteria.bathrooms,
+    bedrooms: property.criteria.bedrooms,
+    type: property.criteria.type,
+    furnished: property.criteria.furnished,
+    price: property.criteria.price
   })
 
   const {
@@ -97,7 +132,7 @@ function PropertyCard (props) {
     bedrooms,
     type,
     furnished,
-    price,
+    price
   } = formData
 
   const quadOpts = [
@@ -117,25 +152,26 @@ function PropertyCard (props) {
   ]
 
   const furnishedOpts = [
-    { value: 'Yes', label: 'Yes' },
-    { value: 'No', label: 'No' }
+    { value: true, label: 'Yes' },
+    { value: false, label: 'No' }
   ]
 
   const onChange = e => {
-    console.log(e.target.value)
     setFormData(prevState => ({
       ...prevState,
       [e.target.name]: e.target.value
     }))
   }
 
-  const onSubmit = e => {
-    var select = document.getElementById('Quadrant')
-    console.log(select.value)
-    const Quadrant = select.value
-    e.preventDefault()
+  const onSelect = (option, action) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [action.name]: option.value
+    }))
+  }
 
-    const postData = {
+  const onSubmit = e => {
+    const propData = {
       city,
       street,
       zipCode,
@@ -144,8 +180,27 @@ function PropertyCard (props) {
       bedrooms,
       type,
       furnished,
-      price,
+      price
     }
+    const propId = property._id
+    const data = { propId, body: propData }
+    dispatch(updateListing(data))
+    toast.success('Updated property')
+  }
+
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  const handleConfirmOpen = () => {
+    setConfirmOpen(true)
+  }
+
+  const handleConfirmClose = () => {
+    setConfirmOpen(false)
+  }
+
+  const onRemove = () => {
+    dispatch(removeFromListings(property._id))
+    toast.success('Removed listing')
   }
 
   return (
@@ -153,7 +208,10 @@ function PropertyCard (props) {
       <CardHeader
         avatar={
           <Avatar
-            sx={{ bgcolor: randomAvColour, '&:hover': { opacity: 0.7 } }}
+            sx={{
+              bgcolor: stringToColour(property.seller.email),
+              '&:hover': { opacity: 0.7 }
+            }}
             component={Link}
             to={'/user/' + property.seller.email}
           >
@@ -202,8 +260,11 @@ function PropertyCard (props) {
       {browse && user && user.type === 'buyer' ? (
         <>
           <CardActions disableSpacing>
-            <IconButton aria-label='add to saved properties'>
-              <FaRegHeart />
+            <IconButton
+              aria-label='add to saved properties'
+              onClick={handleSave}
+            >
+              {isSaved ? <FaHeart /> : <FaRegHeart />}
             </IconButton>
           </CardActions>
         </>
@@ -230,6 +291,7 @@ function PropertyCard (props) {
                 <DialogContent>
                   <form onSubmit={onSubmit}>
                     <div className='form-group'>
+                      <label htmlFor='city'>City</label>
                       <input
                         type='city'
                         className='form-control'
@@ -241,6 +303,7 @@ function PropertyCard (props) {
                       />
                     </div>
                     <div className='form-group'>
+                      <label htmlFor='street'>Street</label>
                       <input
                         type='street'
                         className='form-control'
@@ -252,6 +315,7 @@ function PropertyCard (props) {
                       />
                     </div>
                     <div className='form-group'>
+                      <label htmlFor='zipCode'>Zip Code</label>
                       <input
                         type='zipCode'
                         className='form-control'
@@ -265,10 +329,11 @@ function PropertyCard (props) {
                     <div className='form-group'>
                       <label htmlFor='Quadrant'>Choose a Quadrant</label>
                       <Select
-                        value={quadOpts.value}
+                        value={quadOpts.type}
                         name='Quadrant'
                         className='form-control'
                         options={quadOpts}
+                        onChange={onSelect}
                         defaultValue={{
                           value: property.quadrant,
                           label: property.quadrant
@@ -276,8 +341,11 @@ function PropertyCard (props) {
                       />
                     </div>
                     <div className='form-group'>
+                      <label htmlFor='bathrooms'>Bathrooms</label>
                       <input
                         type='number'
+                        step='0.5'
+                        min='0'
                         className='form-control'
                         id='bathrooms'
                         name='bathrooms'
@@ -287,8 +355,10 @@ function PropertyCard (props) {
                       />
                     </div>
                     <div className='form-group'>
+                      <label htmlFor='bedrooms'>Bedrooms</label>
                       <input
                         type='number'
+                        min='0'
                         className='form-control'
                         id='bedrooms'
                         name='bedrooms'
@@ -301,9 +371,10 @@ function PropertyCard (props) {
                       <label htmlFor='Type'>Choose a Type</label>
                       <Select
                         value={typeOpts.value}
-                        name='Type'
+                        name='type'
                         className='form-control'
                         options={typeOpts}
+                        onChange={onSelect}
                         defaultValue={{
                           value: property.criteria.type,
                           label: property.criteria.type
@@ -314,9 +385,10 @@ function PropertyCard (props) {
                       <label htmlFor='Furnished'>Furnished</label>
                       <Select
                         value={furnishedOpts.value}
-                        name='Furnished'
+                        name='furnished'
                         className='form-control'
                         options={furnishedOpts}
+                        onChange={onSelect}
                         defaultValue={
                           property.criteria.furnished
                             ? furnishedOpts[0]
@@ -325,9 +397,12 @@ function PropertyCard (props) {
                       />
                     </div>
                     <div className='form-group'>
+                      <label htmlFor='price'>Price</label>
                       <input
                         type='number'
                         className='form-control'
+                        step='1000'
+                        min='0'
                         id='price'
                         name='price'
                         value={price}
@@ -341,16 +416,33 @@ function PropertyCard (props) {
                         Submit
                       </button>
                     </div>
-
-                    <div className='form-group'>
-                      <button
-                        className='btn btn-block'
-                        style={{ backgroundColor: '#E23636', border: '0px' }}
-                      >
-                        Remove property
-                      </button>
-                    </div>
                   </form>
+
+                  <button
+                    className='btn btn-block'
+                    style={{ backgroundColor: '#E23636', border: '0px' }}
+                    onClick={handleConfirmOpen}
+                  >
+                    Remove property
+                  </button>
+                  <Dialog
+                    open={confirmOpen}
+                    onClose={handleConfirmClose}
+                    maxWidth='xs'
+                    fullScreen={fullScreen}
+                    fullWidth='md'
+                  >
+                    <DialogTitle>{'Remove listing?'}</DialogTitle>
+                    <DialogContent>
+                      <p>This cannot be undone.</p>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleConfirmClose}>No</Button>
+                      <Button onClick={onRemove} autoFocus>
+                        Yes
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleClose}>Cancel</Button>

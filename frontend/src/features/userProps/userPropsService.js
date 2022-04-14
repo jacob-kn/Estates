@@ -12,6 +12,10 @@ const getSavedProperties = async token => {
     headers: { Authorization: 'Bearer ' + token }
   })
 
+  if (response.data) {
+    localStorage.setItem('saved', JSON.stringify(response.data))
+  }
+
   return response.data
 }
 
@@ -23,6 +27,10 @@ const addToSavedProperties = async (propId, token) => {
     headers: { Authorization: 'Bearer ' + token }
   })
 
+  if (response.data) {
+    localStorage.setItem('saved', JSON.stringify(response.data))
+  }
+
   return response.data
 }
 
@@ -33,6 +41,10 @@ const removeFromSavedProperties = async (propId, token) => {
     url: API_URL + 'buyer/saved-properties/' + propId,
     headers: { Authorization: 'Bearer ' + token }
   })
+
+  if (response.data) {
+    localStorage.setItem('saved', JSON.stringify(response.data))
+  }
 
   return response.data
 }
