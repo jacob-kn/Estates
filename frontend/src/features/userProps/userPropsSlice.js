@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import userPropsService from './userPropsService'
 
-// Get user from localStorage
-const user = JSON.parse(localStorage.getItem('user'))
+// Get saved from localStorage
+const saved = JSON.parse(localStorage.getItem('saved'))
 
 const initialState = {
-  userProps: [],
+  userProps: saved ? saved : [],
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -50,7 +50,7 @@ export const addToSavedProperties = createAsyncThunk(
 )
 
 export const removeFromSavedProperties = createAsyncThunk(
-  'buyer/saved-properties/add-property',
+  'buyer/saved-properties/remove-property',
   async (propId, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token
@@ -88,7 +88,7 @@ export const getListings = createAsyncThunk(
 )
 
 export const removeFromListings = createAsyncThunk(
-  'seller/listings/add-property',
+  'seller/listings/remove-property',
   async (propId, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token

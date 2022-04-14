@@ -18,8 +18,7 @@ const {
   removeFromSavedProperties,
   getListings,
   removeFromListings,
-  updateListing,
-  tmpAdd
+  updateListing
 } = require('../controllers/userPropertiesController')
 
 const { protect } = require('../middleware/authMiddleware') // to make routes private (need JWT)
@@ -52,7 +51,5 @@ router.get('/seller/listings', protect, getListings) // private/protected
 router.delete('/seller/listings/:id', protect, removeFromListings) // private/protected
 // get listed properties
 router.put('/seller/listings/:id', protect, updateListing) // private/protected
-
-router.post('/seller/add', protect, tmpAdd)
 
 module.exports = router // export the router

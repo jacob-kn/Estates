@@ -29,7 +29,8 @@ const criteriaSchema = mongoose.Schema(
     }
   },
   {
-    collection: 'criteria' // force collection to be named criteria instead of pluralizing
+    collection: 'criteria', // force collection to be named criteria instead of pluralizing
+    timestamps: true
   }
 ) //end buyerSchema
 
