@@ -13,6 +13,7 @@ import {
   updateEmail,
   updatePassword
 } from '../features/auth/authSlice'
+import { getUserAgreements } from '../features/agreements/agreementsSlice'
 
 function MyAccount () {
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ function MyAccount () {
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     state => state.auth
   )
+  const { userAgreements: agreements } = useSelector(state => state.agreement)
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -43,6 +45,8 @@ function MyAccount () {
     if (isSuccess) {
       toast.success('Successfully updated')
     }
+
+    dispatch(getUserAgreements())
 
     return () => {
       dispatch(reset())
@@ -116,16 +120,16 @@ function MyAccount () {
         ) : null}
       </section>
 
-      {/* <section className='form'>
+      <section className='form'>
         <Divider sx={{ mb: 1.5 }} textAlign='center'>
           My Agreements
         </Divider>
         {agreements && agreements.length ? (
           agreements.map(agreement => (
-            <Link to=''>
+            <Link to={'/agreement/' + agreement._id}>
               <li style={{ textAlign: 'left' }} className='greyHover'>
                 {agreement.buyer.email} &amp; {agreement.seller.email}
-                &nbsp;({agreement.createdAt.toLocaleDateString()})
+                &nbsp;({new Date(agreement.createdAt).toLocaleDateString()})
               </li>
             </Link>
           ))
@@ -133,14 +137,14 @@ function MyAccount () {
           <p>No current offers</p>
         )}
         <br />
-      </section> */}
+      </section>
       <section className='form'>
         <Divider sx={{ mb: 1.5 }} textAlign='left'>
           Edit Email
         </Divider>
         <form onSubmit={changeEmail}>
           <div className='form-group'>
-            <label for='email'>
+            <label htmlFor='email'>
               Current email: <strong>{user.email}</strong>
             </label>
             <input
