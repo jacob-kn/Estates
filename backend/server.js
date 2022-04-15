@@ -1,6 +1,7 @@
 //entry point to server
 console.log('Estates server.js running')
 
+const path = require('path')
 const colors = require('colors')
 const connectDB = require('./config/db') // require the db file to acces mongodb
 connectDB() //set up a donnection to the database
@@ -24,6 +25,19 @@ app.use('/api/users', require('./routes/userRoutes')) // all user routes
 app.use('/api/properties', require('./routes/propertyRoutes')) // property routes
 app.use('/api/agreements', require('./routes/agreementRoutes')) // agreement routes
 app.use('/api/fee', require('./routes/feeRoutes')) // fee routes
+
+// serve frontend
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')))
+
+  app.get('*', (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, '../', 'frontend', 'build', 'index.html')
+    )
+  )
+} else {
+  app.get('/', (req, res) => res.send('Please set to production'))
+}
 
 app.use(errorHandler) // override default error handlers
 
