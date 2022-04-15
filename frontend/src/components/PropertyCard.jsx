@@ -73,9 +73,7 @@ function PropertyCard (props) {
 
   const { property, browse, saved } = props
 
-  const imgs = property.imgPaths.map(
-    imgPath => process.env.PUBLIC_URL + '/uploads/' + imgPath
-  )
+  const imgs = property.imgPaths
 
   const addrStr = `${property.street} ${property.quadrant}, ${property.city}`
 

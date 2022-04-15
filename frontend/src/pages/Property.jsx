@@ -45,8 +45,8 @@ function Property () {
     let imgPaths = property.imgPaths
 
     const imgArr = imgPaths.map(imgPath => ({
-      original: process.env.PUBLIC_URL + '/uploads/' + imgPath,
-      thumbnail: process.env.PUBLIC_URL + '/uploads/' + imgPath
+      original: imgPath,
+      thumbnail: imgPath
     }))
 
     setImgs(imgArr)
@@ -105,7 +105,7 @@ function Property () {
         <p>Property does not exist</p>
       ) : (
         <>
-          <Container>
+          <Container sx={{ display: 'flex', justifyContent: 'center' }}>
             {!imgs && getImgs()}
             <ImageGallery items={imgs} />
           </Container>

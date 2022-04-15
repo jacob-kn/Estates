@@ -8,9 +8,10 @@ const {
   getProperty
 } = require('../controllers/propertyController')
 const { protect } = require('../middleware/authMiddleware') // to make routes private (need JWT)
+const parser = require('../middleware/cloudinaryMiddleware')
 
 // create new property
-router.post('/',protect, createProperty)
+router.post('/', protect, parser.array('HousePhotos'), createProperty)
 //get properties on a page
 router.post('/page/:page', getProperties)
 //count all properties

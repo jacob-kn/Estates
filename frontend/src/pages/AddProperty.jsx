@@ -7,15 +7,12 @@ import { addProperty, reset } from '../features/addProperties/addPropertySlice'
 import { getFee } from '../features/fee/feeSlice'
 import Spinner from '../components/Spinner'
 import { Currency } from 'react-intl-number-format'
-import axios from 'axios'
 import {
   Dialog,
   DialogContent,
   DialogActions,
   DialogTitle,
-  Button,
-  useMediaQuery,
-  createTheme
+  Button
 } from '@mui/material'
 
 function AddProperty () {
@@ -94,10 +91,6 @@ function AddProperty () {
     }
 
     dispatch(getFee())
-
-    return () => {
-      dispatch(reset()) // reset the variables
-    }
   }, [
     file,
     user,
@@ -109,6 +102,12 @@ function AddProperty () {
     dispatch,
     navigate
   ])
+
+  useEffect(() => {
+    return () => {
+      dispatch(reset()) // only reset on unmount
+    }
+  }, [])
 
   const onChange = e => {
     setFormData({
@@ -127,6 +126,7 @@ function AddProperty () {
   }
 
   const onSubmit = async () => {
+    handlePaymentClose()
     var select = document.getElementById('Quadrant')
     const Quadrant = select.value
     var select = document.getElementById('Type')
@@ -146,7 +146,6 @@ function AddProperty () {
       )
     ) {
       toast.error('Please fill all fields')
-      handlePaymentClose()
     }
 
     // e.preventDefault()

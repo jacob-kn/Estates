@@ -266,6 +266,20 @@ h3 {
   margin-bottom: 0px
 }
 
+.image-gallery {
+  width: 60%;
+  height: auto;
+}
+
+.image-gallery-slide img {
+  width: 100%;
+  height: 400px;
+}
+
+.fullscreen .image-gallery-slide img {
+  max-height: 100vh;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
