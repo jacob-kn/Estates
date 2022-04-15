@@ -7,27 +7,31 @@ const util = require('util')
 
 /**
  * @desc create a new property and criteria
- * @route GET /api/properties/
+ * @route POST /api/properties/
  * @access private
  */
 const createProperty = asyncHandler(async (req, res) => {
-
-
   if (!req.user.id) {
     res.status(400)
     throw new Error('Please add Post Information')
   }
 
-  if (req.files === null) { // check that there is a file attached
+  if (req.files === null) {
+    // check that there is a file attached
     res.status(400)
     throw new Error('No File Selected') // this doens't work but i can't see a reason my notnpm
   }
-  const acceptedImageTypes = ['image/gif', 'image/jpeg',
-    'image/png', 'image/jpg', 'image/x-icon'];
+  const acceptedImageTypes = [
+    'image/gif',
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/x-icon'
+  ]
   if (req.files.HousePhotos[0] === undefined) {
-    req.files.HousePhotos = [req.files.HousePhotos];
+    req.files.HousePhotos = [req.files.HousePhotos]
   }
-  const file = [req.files.HousePhotos[0]];
+  const file = [req.files.HousePhotos[0]]
   for (var i = 1; i < req.files.HousePhotos.length; i++) {
     file.push(req.files.HousePhotos[i])
   }
@@ -41,38 +45,31 @@ const createProperty = asyncHandler(async (req, res) => {
     newFileName.push(newFileNameSpaces[i].replace(/\s/g, '_'))
   }
 
-
-
-
   for (var i = 0; i < req.files.HousePhotos.length; i++) {
-    if (!acceptedImageTypes.includes(file[i].mimetype)) { // handle file of the wrong format
+    if (!acceptedImageTypes.includes(file[i].mimetype)) {
+      // handle file of the wrong format
       res.status(400)
       throw new Error('Incorrect File Format') // this doens't work but i can't see a reason my not
     }
 
     // set file to a directory with a specific name in that directory
-    file[i].mv(`${__dirname}/../../frontend/public/uploads/${newFileName[i]}`, err => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send(err); // server error
+    file[i].mv(
+      `${__dirname}/../../frontend/public/uploads/${newFileName[i]}`,
+      err => {
+        if (err) {
+          console.error(err)
+          return res.status(500).send(err) // server error
+        }
       }
-    });
+    )
   }
 
-
-
-
-
-
-
-
   const criteria = await Criteria.create({
-
     quad: req.body.Quadrant,
     bathrooms: req.body.bathrooms,
     bedrooms: req.body.bedrooms,
     type: req.body.type,
-    furnished: (req.body.furnished === 'Yes'),
+    furnished: req.body.furnished === 'Yes',
     price: parseInt(req.body.price)
   })
 
@@ -87,7 +84,6 @@ const createProperty = asyncHandler(async (req, res) => {
     //no tags for now
   })
 
-
   const user = await Seller.findOneAndUpdate(
     { _id: req.user.id },
     {
@@ -101,10 +97,7 @@ const createProperty = asyncHandler(async (req, res) => {
 
   console.log('New Post created ')
   res.status(200).json(criteria + property)
-
 })
-
-
 
 /**
  * @desc get all properties by page and sort order
