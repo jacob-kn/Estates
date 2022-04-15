@@ -20,9 +20,13 @@ function Agreement () {
     // get user information
     state => state.auth
   )
-  const { curAgreement: agreement, isLoading, isError, message } = useSelector(
-    state => state.agreement
-  )
+  const {
+    curAgreement: agreement,
+    isLoading,
+    isSuccess,
+    isError,
+    message
+  } = useSelector(state => state.agreement)
 
   const [name, setName] = useState('')
 
@@ -55,11 +59,13 @@ function Agreement () {
     if (!agreement) {
       dispatch(getAgreement(id))
     }
-
-    return () => {
-      dispatch(reset()) // reset the variables
-    }
   }, [user, isLoading, isError, message, dispatch, navigate])
+
+  useEffect(() => {
+    return () => {
+      dispatch(reset()) // run cleanup only on unmount
+    }
+  }, [])
 
   const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' }
   const timeOptions = { timeStyle: 'short' }
