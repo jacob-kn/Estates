@@ -429,8 +429,6 @@ function PropertyCard (props) {
                     open={confirmOpen}
                     onClose={handleConfirmClose}
                     maxWidth='xs'
-                    fullScreen={fullScreen}
-                    fullWidth='md'
                   >
                     <DialogTitle>{'Remove listing?'}</DialogTitle>
                     <DialogContent>

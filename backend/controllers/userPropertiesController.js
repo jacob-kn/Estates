@@ -168,7 +168,9 @@ const removeFromListings = asyncHandler(async (req, res) => {
     { $pull: { savedProperties: req.params.id } }
   )
 
-  await Property.findByIdAndDelete(req.params.id)
+  const property = await Property.findByIdAndDelete(req.params.id)
+
+  await Criteria.findByIdAndDelete(property.criteria)
 
   returnListings(req, res)
 }) //end

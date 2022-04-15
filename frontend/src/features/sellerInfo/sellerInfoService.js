@@ -12,8 +12,8 @@ const getSeller = async id => {
   return response.data
 }
 
-const userPropsService = {
+const sellerInfoService = {
   getSeller
 }
 
-export default userPropsService
+export default sellerInfoService

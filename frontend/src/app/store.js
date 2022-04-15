@@ -5,6 +5,7 @@ import propertyReducer from '../features/properties/propertySlice'
 import propReducer from '../features/addProperties/addPropertySlice'
 import agreementReducer from '../features/agreements/agreementsSlice'
 import sellerInfoReducer from '../features/sellerInfo/sellerInfoSlice'
+import feeReducer from '../features/fee/feeSlice'
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     userProps: userPropsReducer,
     addProperties: propReducer,
     agreement: agreementReducer,
-    sellerInfo: sellerInfoReducer
+    sellerInfo: sellerInfoReducer,
+    fee: feeReducer
   }
 })
