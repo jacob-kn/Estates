@@ -40,7 +40,6 @@
 - Password encryption for users
 - User of Json web tokens (JWT)
 - Use of a cloud database (MongoDB)
-- 
 
 
 ## Screenshots
@@ -49,32 +48,18 @@
 
 
 ## Setup
-What are the project requirements/dependencies? Where are they listed? 
-
-Proceed to describe how to install / setup one's local environment / get started with the project.
-
 
 ## Usage
-How does one go about using it?
-Provide various use cases and code examples here.
-
-`write-your-code-here`
-
 
 ## Project Status
 Project is: _in progress_ 
 
 
 ## Room for Improvement
-Room for improvement:
-- Improvement to be done 1
-- Improvement to be done 2
 
 
 ## Acknowledgements
-Give credit here.
 - This project was based on [this tutorial](https://www.youtube.com/playlist?list=PLx5VofXGboI3keWyKVqmEDXT4Fk-utH2P).
-- Many thanks to Tim Reimer for the help with diagrams and advice for the project
 
 
 
