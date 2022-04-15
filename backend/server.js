@@ -22,7 +22,8 @@ app.use(fileupload())
 //routes/endpoints
 app.use('/api/users', require('./routes/userRoutes')) // all user routes
 app.use('/api/properties', require('./routes/propertyRoutes')) // property routes
-app.use('/api/agreements', require('./routes/agreementRoutes')) // property routes
+app.use('/api/agreements', require('./routes/agreementRoutes')) // agreement routes
+app.use('/api/fee', require('./routes/feeRoutes')) // fee routes
 
 app.use(errorHandler) // override default error handlers
 
