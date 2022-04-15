@@ -12,7 +12,7 @@ export const store = configureStore({
     properties: propertyReducer,
     userProps: userPropsReducer,
     addProperties: propReducer,
-    addAgreement: agreementReducer,
+    agreement: agreementReducer,
     sellerInfo: sellerInfoReducer
   }
 })

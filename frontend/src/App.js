@@ -40,7 +40,7 @@ function App () {
             <Route path='/property/:id' element={<Property />} />
             <Route path='/user/:id' element={<User />} />
             <Route path='/property/:id/make-offer' element={<MakeOffer />} />
-            <Route path='/agreement' element={<Agreement />} />
+            <Route path='/agreement/:id' element={<Agreement />} />
           </Routes>
         </div>
       </Router>

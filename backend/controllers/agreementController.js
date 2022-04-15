@@ -64,14 +64,18 @@ const getAgreement = asyncHandler(async (req, res) => {
 const acceptAgreement = asyncHandler(async (req, res) => {
   if (!req.params.id) {
     res.status(400)
-    throw new Error('Property ID could not be found in request parameters')
+    throw new Error('Agreement ID could not be found in request parameters')
   }
   if (!valid.isValidObjectId(req.params.id)) {
     res.status(400)
-    throw new Error('Invalid property id')
+    throw new Error('Invalid agreement id')
   }
 
   const { sellerName } = req.body
+  if (!sellerName) {
+    res.status(400)
+    throw new Error('Please enter a name')
+  }
   const dateSigned = new Date()
 
   const update = { sellerName, dateSigned }
@@ -104,16 +108,24 @@ const acceptAgreement = asyncHandler(async (req, res) => {
 const rejectAgreement = asyncHandler(async (req, res) => {
   if (!req.params.id) {
     res.status(400)
-    throw new Error('Property ID could not be found in request parameters')
+    throw new Error('Agreement ID could not be found in request parameters')
   }
   if (!valid.isValidObjectId(req.params.id)) {
     res.status(400)
-    throw new Error('Invalid property id')
+    throw new Error('Invalid agreement id')
   }
 
+  const { sellerName } = req.body
+  if (!sellerName) {
+    res.status(400)
+    throw new Error('Please enter a name')
+  }
+  const dateSigned = new Date()
   const rejected = new Date()
 
-  await Agreement.findByIdAndUpdate(req.params.id, { rejected })
+  const update = { sellerName, dateSigned, rejected }
+
+  await Agreement.findByIdAndUpdate(req.params.id, update)
 
   const agreement = await Agreement.findById(req.params.id)
     .populate('seller', 'email')

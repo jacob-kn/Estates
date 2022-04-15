@@ -6,17 +6,18 @@ import { toast } from 'react-toastify'
 import { IoDocumentTextOutline } from 'react-icons/io5'
 import DatePicker from 'react-datepicker'
 import Spinner from '../components/Spinner'
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css'
+import { getProperty } from '../features/properties/propertySlice'
 import { addAgreement, reset } from '../features/agreements/agreementsSlice'
 
 function MakeOffer () {
   let { id } = useParams()
-  
-  let module = require('./tmpProps.js')
-  let tmpProps = module.tmpProps
-  const property = tmpProps.filter(tmpProp => tmpProp._id == id)[0]
 
-  const addrStr = `${property.street} ${property.quadrant}, ${property.city}`
+  const addrStr = () => {
+    if (property) {
+      return `${property.street} ${property.quadrant}, ${property.city}`
+    }
+  }
 
   const [closingDate, setClosingDate] = useState(new Date())
   const [offerExpiration, setOfferExpiration] = useState(new Date())
@@ -24,54 +25,48 @@ function MakeOffer () {
     buyerName: '',
     purchasePrice: '',
     deposit: '',
-    landSurveyRequested: false,
+    landSurveyRequested: false
   })
 
-  const {
-    buyerName,
-    purchasePrice,
-    deposit,
-    landSurveyRequested,
-  } = formData
+  const { buyerName, purchasePrice, deposit, landSurveyRequested } = formData
 
-  const { user } = useSelector( // get user information
+  const { user } = useSelector(
+    // get user information
     state => state.auth
   )
   const { agreement, isLoading, isError, isSuccess, message } = useSelector(
-    state => state.addAgreement
+    state => state.agreement
   )
+  const { curProp: property } = useSelector(state => state.properties)
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   useEffect(() => {
-
-    if (isError) { // error in handling things if not all fields are filled
+    if (isError) {
+      // error in handling things if not all fields are filled
       toast.error(message)
     }
 
-    if (!user) { // shouldn't need this part but good to have
+    if (!user) {
+      // shouldn't need this part but good to have
       navigate('/login')
     }
 
+    dispatch(getProperty(id))
+
     if (isSuccess) {
-      toast('Offer Sent')
-      //navigate('/') // go to dashboard
+      if (agreement) {
+        toast('Offer Sent')
+        navigate('/agreement/' + agreement._id)
+      }
     }
 
     return () => {
       dispatch(reset()) // reset the variables
     }
-  }, [
-    user, 
-    isLoading, 
-    isError, 
-    isSuccess,
-    message,
-    dispatch,
-    navigate,
-  ])
-  
+  }, [user, isLoading, isError, isSuccess, message, dispatch, navigate])
+
   const onChange = e => {
     const value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value
@@ -82,18 +77,18 @@ function MakeOffer () {
   }
 
   const onSubmit = async e => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const agreementData = new FormData(); // set form data
-    agreementData.append('propertyId', property._id);
-    agreementData.append('sellerId', property.seller._id);
-    agreementData.append('buyerId', user._id)
-    agreementData.append('buyerName', formData.buyerName);
-    agreementData.append('purchasePrice', formData.purchasePrice);
-    agreementData.append('deposit', formData.deposit);
-    agreementData.append('offerExpiration', offerExpiration);
-    agreementData.append('closingDate', closingDate);
-    agreementData.append('landSurveyRequested', formData.landSurveyRequested);
+    const agreementData = {
+      property: id,
+      seller: property.seller._id,
+      buyerName: formData.buyerName,
+      purchasePrice: formData.purchasePrice,
+      deposit: formData.deposit,
+      offerExpiration: offerExpiration,
+      closingDate: closingDate,
+      landSurveyRequested: formData.landSurveyRequested
+    }
 
     dispatch(addAgreement(agreementData))
   }
@@ -117,7 +112,7 @@ function MakeOffer () {
             <input
               className='form-control'
               id='property-address'
-              value={addrStr}
+              value={addrStr()}
               readOnly='readonly'
             />
           </div>
@@ -135,33 +130,38 @@ function MakeOffer () {
           <div className='form-group'>
             <label>Purchase Price</label>
             <input
+              type='number'
               className='form-control'
+              step='1000'
               id='purchase-price'
+              min='0'
               name='purchasePrice'
               value={purchasePrice}
-              placeholder="Enter offering amount in CAD"
+              placeholder='Enter offering amount in CAD'
               onChange={onChange}
             />
           </div>
           <div className='form-group'>
             <label>Closing Date</label>
-            <DatePicker 
+            <DatePicker
               selected={closingDate}
-              onChange={(date) => setClosingDate(date)}
+              onChange={date => setClosingDate(date)}
             />
           </div>
           <div className='form-group'>
             <label>Offer Expiration</label>
-            <DatePicker 
+            <DatePicker
               selected={offerExpiration}
-              onChange={(date) => setOfferExpiration(date)}
+              onChange={date => setOfferExpiration(date)}
             />
           </div>
           <div className='form-group'>
             <label>Deposit</label>
             <input
+              type='number'
               className='form-control'
               id='deposit'
+              min='0'
               name='deposit'
               value={deposit}
               placeholder='Enter any amount in CAD'
@@ -181,9 +181,9 @@ function MakeOffer () {
             </label>
           </div>
           <div className='form-group'>
-              <button type='submit' className='btn btn-block'>
-                Sign Agreement
-              </button>
+            <button type='submit' className='btn btn-block'>
+              Sign Agreement
+            </button>
           </div>
         </form>
         <br />

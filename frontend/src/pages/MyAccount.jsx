@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { reset } from '../features/auth/authSlice'
 import { toast } from 'react-toastify'
 import { FaUser } from 'react-icons/fa'
@@ -50,7 +50,6 @@ function MyAccount () {
   }, [user, isError, isSuccess, message, navigate, dispatch])
 
   const onChange = e => {
-    console.log(e.target.value)
     setFormData(prevState => ({
       ...prevState,
       [e.target.name]: e.target.value
@@ -116,6 +115,25 @@ function MyAccount () {
           </>
         ) : null}
       </section>
+
+      {/* <section className='form'>
+        <Divider sx={{ mb: 1.5 }} textAlign='center'>
+          My Agreements
+        </Divider>
+        {agreements && agreements.length ? (
+          agreements.map(agreement => (
+            <Link to=''>
+              <li style={{ textAlign: 'left' }} className='greyHover'>
+                {agreement.buyer.email} &amp; {agreement.seller.email}
+                &nbsp;({agreement.createdAt.toLocaleDateString()})
+              </li>
+            </Link>
+          ))
+        ) : (
+          <p>No current offers</p>
+        )}
+        <br />
+      </section> */}
       <section className='form'>
         <Divider sx={{ mb: 1.5 }} textAlign='left'>
           Edit Email
