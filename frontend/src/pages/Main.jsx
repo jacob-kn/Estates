@@ -10,13 +10,11 @@ import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import Box from '@mui/material/Box'
 import { toast } from 'react-toastify'
-import {
-  getSavedProperties,
-  reset
-} from '../features/userProps/userPropsSlice.js'
+import { getSavedProperties } from '../features/userProps/userPropsSlice.js'
 import {
   getProperties,
-  countProperties
+  countProperties,
+  reset
 } from '../features/properties/propertySlice.js'
 import { scale } from '../components/Filter'
 
@@ -27,7 +25,9 @@ function Main () {
   const { properties, propCount, isLoading, isError, message } = useSelector(
     state => state.properties
   )
-  const { userProps } = useSelector(state => state.userProps)
+  const { userProps, isLoading: savedLoading } = useSelector(
+    state => state.userProps
+  )
 
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState({
@@ -77,7 +77,7 @@ function Main () {
 
   let data = { page, body: finalFilter }
 
-  const populateFinalFitler = () => {
+  const populateFinalFilter = () => {
     finalFilter.sort = sort
     finalFilter.quad = quad
     finalFilter.bathrooms = bathrooms
@@ -94,7 +94,7 @@ function Main () {
   }
 
   const dispatchGet = () => {
-    populateFinalFitler()
+    populateFinalFilter()
     dispatch(getProperties(data))
     dispatch(countProperties(finalFilter))
   }
@@ -145,7 +145,7 @@ function Main () {
     if (isError) {
       console.log(message)
     }
-    populateFinalFitler()
+    populateFinalFilter()
     dispatch(getProperties(data))
     dispatch(countProperties(finalFilter))
 
@@ -157,8 +157,6 @@ function Main () {
       dispatch(reset())
     }
   }, [isError, message, user, page, dispatch])
-
-  useEffect(() => {})
 
   const pageCount = () => {
     return Math.ceil(propCount / 9)
@@ -177,7 +175,8 @@ function Main () {
     return false
   }
 
-  if (isLoading) {
+  if (isLoading || savedLoading) {
+    console.log(savedLoading)
     return <Spinner />
   }
 

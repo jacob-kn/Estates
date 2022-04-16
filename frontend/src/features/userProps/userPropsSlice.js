@@ -146,7 +146,7 @@ export const userPropsSlice = createSlice({
         state.message = action.payload
       })
       .addCase(addToSavedProperties.pending, state => {
-        state.isLoading = true
+        // state.isLoading = true
       })
       .addCase(addToSavedProperties.fulfilled, (state, action) => {
         state.isLoading = false
@@ -159,7 +159,7 @@ export const userPropsSlice = createSlice({
         state.message = action.payload
       })
       .addCase(removeFromSavedProperties.pending, state => {
-        state.isLoading = true
+        // state.isLoading = true
       })
       .addCase(removeFromSavedProperties.fulfilled, (state, action) => {
         state.isLoading = false
